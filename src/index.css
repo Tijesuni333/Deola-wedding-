@@ -7,21 +7,27 @@
   --font-sans: 'Jost', ui-sans-serif, system-ui, sans-serif;
 
   /* Palette — change these to re-theme the whole site. */
-  --color-paper: #f6f1e9;
-  --color-paper-2: #ede5d8;
-  --color-ink: #2b2622;
-  --color-ink-soft: #6d635a;
-  --color-accent: #9c6b4f;
-  --color-accent-soft: #d8b9a3;
-  --color-line: #d9cfc1;
+  /* Core palette: ivory #fffff0 · beige #f5f5dc · sand #e8d6b3 · cocoa #573831 · black #0f0f0f */
+  --color-paper: #fffff0;
+  --color-paper-2: #f5f5dc;
+  --color-ink: #0f0f0f;
+  --color-ink-soft: #6b5650;
+  --color-accent: #573831;
+  --color-accent-soft: #e8d6b3;
+  --color-line: #e3cfa9;
 
-  --color-night: #15130f;
-  --color-night-2: #1f1c17;
-  --color-moon: #efe7db;
-  --color-moon-soft: #a99e90;
-  --color-line-dark: #3a342c;
+  --color-night: #0f0f0f;
+  --color-night-2: #1c1513;
+  --color-moon: #f5f5dc;
+  --color-moon-soft: #b8a88c;
+  --color-line-dark: #3b2b26;
 
   --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Cocoa is too dark to read on black, so dark mode uses a lighter, warmer brown. */
+.dark {
+  --color-accent: #c9a48f;
 }
 
 @layer base {
@@ -45,10 +51,10 @@
     @apply font-sans text-[0.7rem] font-normal tracking-[0.35em] uppercase;
   }
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-full border border-current px-6 py-3 text-xs tracking-[0.25em] uppercase transition-all duration-300 hover:bg-ink hover:text-paper dark:hover:bg-moon dark:hover:text-night;
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-current px-6 py-3 text-xs tracking-[0.25em] uppercase transition-all duration-300 hover:border-accent hover:bg-accent hover:text-paper dark:hover:border-moon dark:hover:bg-moon dark:hover:text-night;
   }
   .btn-solid {
-    @apply inline-flex items-center justify-center gap-2 rounded-full bg-ink px-6 py-3 text-xs tracking-[0.25em] text-paper uppercase transition-all duration-300 hover:bg-accent disabled:opacity-50 dark:bg-moon dark:text-night dark:hover:bg-accent-soft;
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-accent px-6 py-3 text-xs tracking-[0.25em] text-paper uppercase transition-all duration-300 hover:bg-ink disabled:opacity-50 dark:bg-moon dark:text-night dark:hover:bg-accent-soft;
   }
   .field {
     @apply w-full rounded-none border-0 border-b border-line bg-transparent px-0 py-2.5 text-base placeholder:text-ink-soft/70 focus:border-accent focus:ring-0 focus:outline-none dark:border-line-dark dark:placeholder:text-moon-soft/60;
@@ -68,9 +74,30 @@
   }
 }
 
+/* Hero background blobs: radial gradients instead of filter: blur() so mobile GPUs only move a texture. */
+.blob {
+  will-change: transform;
+  backface-visibility: hidden;
+}
+.blob-a {
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--color-accent-soft) 40%, transparent), transparent);
+}
+.blob-b {
+  background: radial-gradient(closest-side, var(--color-paper-2), transparent);
+}
+.dark .blob-a {
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--color-accent) 20%, transparent), transparent);
+}
+.dark .blob-b {
+  background: radial-gradient(closest-side, var(--color-night-2), transparent);
+}
+
 @keyframes drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
   to {
-    transform: translate(12%, 8%) scale(1.1);
+    transform: translate3d(12%, 8%, 0) scale(1.1);
   }
 }
 @keyframes scrollcue {

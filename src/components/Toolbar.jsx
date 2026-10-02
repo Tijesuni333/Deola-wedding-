@@ -48,7 +48,7 @@ export function Toolbar() {
   }, [])
 
   const hasLocales = Object.keys(locales).length > 1
-  const initials = `${wedding.couple.partnerA[0]}&${wedding.couple.partnerB[0]}`
+  const logo = wedding.couple.hashtag || `${wedding.couple.partnerA[0]}&${wedding.couple.partnerB[0]}`
 
   return (
     <>
@@ -61,7 +61,7 @@ export function Toolbar() {
       >
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-3 sm:px-6">
           <a href="#home" className="px-2 font-display text-2xl italic" aria-label="Back to top">
-            {initials}
+            {logo}
           </a>
 
           <nav aria-label="Sections" className="hidden items-center gap-8 md:flex">

@@ -25,11 +25,8 @@ export function AppProvider({ children }) {
     const saved = safeGet('wedding:locale')
     return saved && locales[saved] ? saved : defaultLocale
   })
-  const [theme, setTheme] = useState(() => {
-    const saved = safeGet('wedding:theme')
-    if (saved === 'light' || saved === 'dark') return saved
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-  })
+  // Light by default; dark only if this guest switched to it themselves.
+  const [theme, setTheme] = useState(() => (safeGet('wedding:theme-choice') === 'dark' ? 'dark' : 'light'))
   const [musicOn, setMusicOn] = useState(false)
   // The open panel ('gallery' | 'rsvp' | null) is mirrored in the URL (/photos, /rsvp) so it can be shared.
   const [view, setView] = useState(viewFromLocation)
@@ -69,7 +66,6 @@ export function AppProvider({ children }) {
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark')
-    safeSet('wedding:theme', theme)
   }, [theme])
 
   useEffect(() => {
@@ -117,7 +113,12 @@ export function AppProvider({ children }) {
         setLocale((l) => keys[(keys.indexOf(l) + 1) % keys.length])
       },
       theme,
-      toggleTheme: () => setTheme((t) => (t === 'dark' ? 'light' : 'dark')),
+      toggleTheme: () =>
+        setTheme((t) => {
+          const next = t === 'dark' ? 'light' : 'dark'
+          safeSet('wedding:theme-choice', next)
+          return next
+        }),
       musicOn,
       toggleMusic,
       startMusic,

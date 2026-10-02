@@ -3,10 +3,10 @@
  * so the layout looks finished before the couple sends their pictures.
  */
 const tints = [
-  ['#d8b9a3', '#9c6b4f'],
-  ['#c9c3b0', '#6f735b'],
-  ['#e3c9b8', '#a7766d'],
-  ['#cfc4d6', '#7d6a86'],
+  ['#e8d6b3', '#573831'],
+  ['#f5f5dc', '#8a6556'],
+  ['#e8d6b3', '#3a2520'],
+  ['#efe3c8', '#73504a'],
 ]
 
 export function PhotoFrame({ src, label, index = 0, className = '' }) {

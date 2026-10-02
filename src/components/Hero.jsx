@@ -3,6 +3,11 @@ import gsap from 'gsap'
 import { useApp } from '../hooks/useApp'
 import { wedding } from '../config/wedding'
 
+const longest = Math.max(wedding.couple.partnerA.length, wedding.couple.partnerB.length)
+/** 16vw suits ~6-letter names; longer names shrink so they never overflow a phone screen. */
+const nameVw = Math.min(16, 140 / longest)
+const nameSize = `clamp(${(nameVw / 4).toFixed(2)}rem, ${nameVw.toFixed(1)}vw, ${(nameVw * 0.69).toFixed(2)}rem)`
+
 export function Hero({ play }) {
   const { t } = useApp()
   const root = useRef(null)
@@ -10,10 +15,12 @@ export function Hero({ play }) {
   useEffect(() => {
     if (!play || !root.current) return
     const ctx = gsap.context(() => {
+      // force3D keeps each line on its own GPU layer, so the big serif text and the grain
+      // overlay aren't repainted every frame; clearProps drops the layers once it's done.
       gsap
-        .timeline({ defaults: { ease: 'expo.out' } })
-        .from('[data-hero="line"]', { yPercent: 110, duration: 1.6, stagger: 0.12 })
-        .from('[data-hero="fade"]', { opacity: 0, y: 16, duration: 1.2, stagger: 0.1 }, '-=1.1')
+        .timeline({ defaults: { ease: 'power3.out', force3D: true, clearProps: 'transform,opacity' } })
+        .from('[data-hero="line"]', { yPercent: 110, duration: 1.2, stagger: 0.12 }, 0.05)
+        .from('[data-hero="fade"]', { opacity: 0, y: 16, duration: 1, stagger: 0.1 }, '-=0.8')
     }, root)
     return () => ctx.revert()
   }, [play])
@@ -32,8 +39,8 @@ export function Hero({ play }) {
         />
       ) : (
         <div aria-hidden className="absolute inset-0">
-          <div className="absolute -top-1/4 -left-1/4 h-[70vmax] w-[70vmax] animate-[drift_18s_ease-in-out_infinite_alternate] rounded-full bg-accent-soft/40 blur-3xl dark:bg-accent/20" />
-          <div className="absolute -right-1/4 -bottom-1/4 h-[60vmax] w-[60vmax] animate-[drift_22s_ease-in-out_infinite_alternate-reverse] rounded-full bg-paper-2 blur-3xl dark:bg-night-2" />
+          <div className="blob blob-a absolute -top-1/4 -left-1/4 h-[70vmax] w-[70vmax] animate-[drift_18s_ease-in-out_infinite_alternate]" />
+          <div className="blob blob-b absolute -right-1/4 -bottom-1/4 h-[60vmax] w-[60vmax] animate-[drift_22s_ease-in-out_infinite_alternate-reverse]" />
         </div>
       )}
       <div aria-hidden className="grain pointer-events-none absolute inset-0 opacity-[0.07]" />
@@ -45,7 +52,7 @@ export function Hero({ play }) {
 
         <h1 className="font-display leading-[0.9] font-normal">
           <span className="block overflow-hidden">
-            <span data-hero="line" className="block text-[clamp(4rem,16vw,11rem)]">
+            <span data-hero="line" className="block" style={{ fontSize: nameSize }}>
               {wedding.couple.partnerA}
             </span>
           </span>
@@ -55,7 +62,7 @@ export function Hero({ play }) {
             </span>
           </span>
           <span className="block overflow-hidden">
-            <span data-hero="line" className="block text-[clamp(4rem,16vw,11rem)]">
+            <span data-hero="line" className="block" style={{ fontSize: nameSize }}>
               {wedding.couple.partnerB}
             </span>
           </span>

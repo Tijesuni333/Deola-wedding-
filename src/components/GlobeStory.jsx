@@ -61,7 +61,7 @@ export function GlobeStory() {
 
             <div className="min-h-[420px]">
               {/* City picker — always visible so keyboard and screen-reader users can navigate the story. */}
-              <div role="tablist" aria-label="Story locations" className="mb-8 flex flex-wrap gap-2 lg:mb-5">
+              <div role="tablist" aria-label="Our memories" className="mb-8 flex flex-wrap gap-2 lg:mb-5">
                 {stops.map((s) => (
                   <button
                     key={s.id}
@@ -70,11 +70,11 @@ export function GlobeStory() {
                     onClick={() => setActiveId(s.id)}
                     className={`eyebrow rounded-full border px-4 py-2 text-[0.62rem] transition-colors ${
                       s.id === activeId
-                        ? 'border-accent bg-accent text-paper'
+                        ? 'border-accent bg-accent text-paper dark:text-night'
                         : 'border-line hover:border-accent hover:text-accent dark:border-line-dark'
                     }`}
                   >
-                    {s.city}
+                    {s.title}
                   </button>
                 ))}
               </div>
@@ -84,14 +84,14 @@ export function GlobeStory() {
                   <div className="grid grid-cols-2 gap-3 lg:max-w-[calc(60svh*3/4+0.75rem)]">
                     {(active.photos.length ? active.photos : ['', '']).slice(0, 2).map((src, i) => (
                       <div key={i} className={`aspect-[3/4] overflow-hidden rounded-sm ${i === 0 ? '' : 'mt-10 lg:mt-4'}`}>
-                        <PhotoFrame src={src || undefined} label={active.city} index={index + i} />
+                        <PhotoFrame src={src || undefined} label={active.title} index={index + i} />
                       </div>
                     ))}
                   </div>
                   <p className="eyebrow mt-8 text-accent lg:mt-5">
                     {active.year} · {active.city}
                   </p>
-                  <h3 className="mt-3 font-display text-3xl lg:mt-2">{active.place}</h3>
+                  <h3 className="mt-3 font-display text-3xl lg:mt-2">{active.title}</h3>
                   <p className="mt-3 max-w-md leading-relaxed text-ink-soft dark:text-moon-soft">{active.caption}</p>
 
                   <div className="mt-8 flex items-center gap-4 lg:mt-5">

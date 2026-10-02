@@ -53,23 +53,26 @@ export function Loader({ onDone }) {
   return (
     <div
       ref={root}
-      className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-ink text-paper dark:bg-night-2 dark:text-moon"
+      className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-paper text-accent dark:bg-night dark:text-moon"
       role="dialog"
       aria-label={t.loading}
     >
-      <p className="font-display text-3xl italic opacity-80 sm:text-4xl">
-        {wedding.couple.partnerA} <span className="text-accent-soft">&amp;</span> {wedding.couple.partnerB}
+      <p className="font-display text-3xl italic sm:text-4xl">
+        {wedding.couple.partnerA} <span className="text-ink-soft dark:text-moon-soft">&amp;</span> {wedding.couple.partnerB}
       </p>
+      {wedding.couple.hashtag && (
+        <p className="eyebrow mt-4 tracking-[0.2em] normal-case text-ink-soft dark:text-moon-soft">{wedding.couple.hashtag}</p>
+      )}
 
-      <div className="mt-10 h-px w-48 overflow-hidden bg-paper/15">
-        <div className="h-full bg-accent-soft transition-[width] duration-150" style={{ width: `${pct}%` }} />
+      <div className="mt-10 h-px w-48 overflow-hidden bg-accent-soft dark:bg-line-dark">
+        <div className="h-full bg-accent transition-[width] duration-150" style={{ width: `${pct}%` }} />
       </div>
       <p className="eyebrow mt-4 tabular-nums opacity-70" aria-live="polite">
         {pct}%
       </p>
 
       <div className={`mt-10 flex gap-3 transition-opacity duration-700 ${ready ? 'opacity-100' : 'pointer-events-none opacity-0'}`}>
-        <button className="btn border-paper/40" onClick={() => exit(true)}>
+        <button className="btn" onClick={() => exit(true)}>
           {t.explore}
         </button>
       </div>
