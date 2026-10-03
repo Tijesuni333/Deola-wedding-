@@ -35,7 +35,7 @@ function RsvpForm({ onClose }) {
         guestName: attending && plusOne ? get('guestName') : undefined,
         dietary: attending ? get('dietary') || undefined : undefined,
         message: get('message') || undefined,
-        website: get('website') || undefined, // honeypot, see Code.gs
+        website: get('hp_x7') || undefined, // honeypot, see Code.gs
       })
       setStatus('done')
     } catch {
@@ -79,11 +79,15 @@ function RsvpForm({ onClose }) {
       <p className="mt-2 text-sm text-ink-soft dark:text-moon-soft">{wedding.rsvp.deadlineLabel}</p>
 
       {/* Honeypot for spam bots — hidden from people and screen readers. */}
+      {/* Honeypot for bots. Deliberately not named "website"/"url" etc. — browser autofill
+          fills fields with familiar names even when hidden, which would silently drop real RSVPs. */}
       <input
         type="text"
-        name="website"
+        name="hp_x7"
         tabIndex={-1}
-        autoComplete="off"
+        autoComplete="new-password"
+        data-1p-ignore
+        data-lpignore="true"
         aria-hidden="true"
         className="absolute -left-[9999px] h-0 w-0 opacity-0"
       />
