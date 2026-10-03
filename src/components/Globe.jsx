@@ -83,6 +83,9 @@ export function Globe({ stops, activeId, dark, onSelect }) {
     globe.current = g
 
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    // Phones: while the globe is only drifting on its own, 30fps looks the same and halves the GPU work.
+    const touch = window.matchMedia('(pointer: coarse)').matches
+    let lastDraw = 0
     let raf = 0
     let last = performance.now()
     let visible = true
@@ -112,7 +115,11 @@ export function Globe({ stops, activeId, dark, onSelect }) {
         st.phi += st.spin * dt
       }
       st.theta += (st.targetTheta - st.theta) * ease
-      g.update({ phi: st.phi, theta: st.theta, width: width * dpr, height: width * dpr })
+      const busy = st.dragX !== null || st.targetPhi !== null || Math.abs(st.velocity) > 0.05
+      if (busy || !touch || now - lastDraw >= 32) {
+        g.update({ phi: st.phi, theta: st.theta, width: width * dpr, height: width * dpr })
+        lastDraw = now
+      }
       raf = visible ? requestAnimationFrame(tick) : 0
     }
     raf = requestAnimationFrame(tick)

@@ -17,7 +17,7 @@ function IconButton({ label, onClick, children, pressed }) {
       aria-label={label}
       aria-pressed={pressed}
       title={label}
-      className="flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-ink/5 dark:hover:bg-white/10"
+      className="flex h-10 w-9 items-center justify-center rounded-full transition-colors sm:w-10 hover:bg-ink/5 dark:hover:bg-white/10"
     >
       {children}
     </button>
@@ -53,14 +53,18 @@ export function Toolbar() {
   return (
     <>
       <header
-        className={`fixed inset-x-0 top-0 z-40 transition-[background-color,box-shadow,backdrop-filter] duration-500 ${
+        className={`fixed inset-x-0 top-0 z-40 transition-[background-color,box-shadow] duration-500 ${
           scrolled
-            ? 'bg-paper/80 shadow-[0_1px_0_var(--color-line)] backdrop-blur-md dark:bg-night/80 dark:shadow-[0_1px_0_var(--color-line-dark)]'
+            ? 'bg-paper/95 shadow-[0_1px_0_var(--color-line)] sm:bg-paper/80 sm:backdrop-blur-md dark:bg-night/95 dark:shadow-[0_1px_0_var(--color-line-dark)] sm:dark:bg-night/80'
             : ''
         }`}
       >
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-3 sm:px-6">
-          <a href="#home" className="px-2 font-display text-2xl italic" aria-label="Back to top">
+          <a
+            href="#home"
+            className="shrink-0 px-1 font-display text-xl whitespace-nowrap italic sm:px-2 sm:text-2xl"
+            aria-label="Back to top"
+          >
             {logo}
           </a>
 

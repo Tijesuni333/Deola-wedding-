@@ -26,7 +26,7 @@ export function Modal({ open, onClose, label, children, variant = 'center' }) {
       className={`fixed inset-0 z-50 transition-[opacity,visibility] duration-500 ${open ? 'visible opacity-100' : 'invisible opacity-0'}`}
       aria-hidden={!open}
     >
-      <div className="absolute inset-0 bg-ink/40 backdrop-blur-sm dark:bg-black/60" onClick={onClose} />
+      <div className="absolute inset-0 bg-ink/50 sm:bg-ink/40 sm:backdrop-blur-sm dark:bg-black/70 sm:dark:bg-black/60" onClick={onClose} />
       <div
         ref={panel}
         role="dialog"

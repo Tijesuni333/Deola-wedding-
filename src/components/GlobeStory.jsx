@@ -42,7 +42,7 @@ export function GlobeStory() {
   }
 
   return (
-    <section id="journey" className="relative px-6 py-28 sm:py-36 lg:pt-0">
+    <section id="journey" className="relative overflow-x-clip px-6 py-28 sm:py-36 lg:pt-0">
       <div className="mx-auto max-w-6xl">
         {/* On desktop, the header + globe fill one screen and sit vertically centred. */}
         <div className="lg:flex lg:min-h-svh lg:flex-col lg:justify-center lg:pt-16 lg:pb-6">

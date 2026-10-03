@@ -66,7 +66,11 @@ function Lightbox({ photos, index, onIndex, onClose, onDelete }) {
       </div>
 
       <div className="flex justify-center gap-3 p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
-        <a href={photo.url} download={`wedding-${photo.id}.jpg`} className="btn border-white/40 hover:bg-white hover:text-black">
+        <a
+          href={photo.download ?? photo.url}
+          download={`wedding-${photo.id}.jpg`}
+          className="btn border-white/40 hover:bg-white hover:text-black"
+        >
           <Icon name="download" width={14} height={14} /> {t.download}
         </a>
         {photo.mine && (
@@ -84,21 +88,33 @@ function GalleryBody() {
   const [photos, setPhotos] = useState(null)
   const [uploading, setUploading] = useState(0)
   const [viewing, setViewing] = useState(null)
+  const [error, setError] = useState(null)
   const uploadInput = useRef(null)
   const cameraInput = useRef(null)
 
-  useEffect(() => {
-    backend.listPhotos().then(setPhotos)
+  const load = useCallback(() => {
+    backend
+      .listPhotos()
+      .then(setPhotos)
+      .catch(() => {
+        setPhotos((p) => p ?? [])
+        setError('load')
+      })
   }, [])
+
+  useEffect(load, [load])
 
   const onFiles = async (e) => {
     const files = Array.from(e.target.files ?? []).filter((f) => f.type.startsWith('image/'))
     e.target.value = ''
     setUploading((n) => n + files.length)
+    setError(null)
     for (const file of files) {
       try {
         const photo = await backend.uploadPhoto(file)
         setPhotos((p) => [photo, ...(p ?? [])])
+      } catch {
+        setError('upload')
       } finally {
         setUploading((n) => n - 1)
       }
@@ -106,7 +122,13 @@ function GalleryBody() {
   }
 
   const onDelete = useCallback(async (id) => {
-    await backend.deletePhoto(id)
+    try {
+      await backend.deletePhoto(id)
+    } catch {
+      setViewing(null)
+      setError('delete')
+      return
+    }
     setPhotos((p) => {
       const next = (p ?? []).filter((x) => x.id !== id)
       setViewing((v) => (v === null || next.length === 0 ? null : Math.min(v, next.length - 1)))
@@ -135,6 +157,23 @@ function GalleryBody() {
         <input ref={cameraInput} type="file" accept="image/*" capture="environment" hidden onChange={onFiles} />
       </div>
 
+      {error && (
+        <p role="alert" className="mx-auto mt-6 max-w-md text-center text-sm text-accent">
+          {error === 'load' ? t.loadPhotosFailed : error === 'upload' ? t.uploadFailed : t.deleteFailed}
+          {error === 'load' && (
+            <button
+              onClick={() => {
+                setError(null)
+                load()
+              }}
+              className="ml-2 underline underline-offset-4"
+            >
+              {t.retry}
+            </button>
+          )}
+        </p>
+      )}
+
       <div className="mt-10" aria-live="polite">
         {photos === null ? (
           <div className="grid grid-cols-3 gap-1 sm:grid-cols-4 sm:gap-2 lg:grid-cols-5">
@@ -157,9 +196,10 @@ function GalleryBody() {
             {photos.map((p, i) => (
               <button key={p.id} onClick={() => setViewing(i)} className="group aspect-square overflow-hidden bg-paper-2 dark:bg-night">
                 <img
-                  src={p.url}
+                  src={p.thumb ?? p.url}
                   alt=""
                   loading="lazy"
+                  decoding="async"
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
               </button>

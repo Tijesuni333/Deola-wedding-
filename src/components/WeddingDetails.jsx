@@ -15,14 +15,18 @@ function Countdown() {
     [r.secs, t.secs],
   ]
   return (
-    <div className="flex items-start justify-center gap-1 sm:gap-5" role="timer" aria-label="Time until the wedding">
+    <div className="flex items-start justify-center gap-0.5 min-[360px]:gap-1 sm:gap-5" role="timer" aria-label="Time until the wedding">
       {units.map(([n, label], i) => (
-        <div key={label} className="flex items-start gap-1 sm:gap-5">
-          <div className="w-14 text-center sm:w-20">
-            <div className="font-display text-4xl tabular-nums sm:text-6xl">{String(n).padStart(2, '0')}</div>
-            <div className="eyebrow mt-2 text-[0.55rem] text-ink-soft sm:text-[0.62rem] dark:text-moon-soft">{label}</div>
+        <div key={label} className="flex items-start gap-0.5 min-[360px]:gap-1 sm:gap-5">
+          <div className="w-11 text-center min-[360px]:w-14 sm:w-20">
+            <div className="font-display text-3xl tabular-nums min-[360px]:text-4xl sm:text-6xl">{String(n).padStart(2, '0')}</div>
+            <div className="eyebrow mt-2 text-[0.5rem] tracking-[0.2em] text-ink-soft min-[360px]:text-[0.55rem] min-[360px]:tracking-[0.35em] sm:text-[0.62rem] dark:text-moon-soft">
+              {label}
+            </div>
           </div>
-          {i < units.length - 1 && <span className="pt-1 font-display text-3xl text-accent/60 sm:pt-2 sm:text-5xl">:</span>}
+          {i < units.length - 1 && (
+            <span className="pt-0.5 font-display text-2xl text-accent/60 min-[360px]:pt-1 min-[360px]:text-3xl sm:pt-2 sm:text-5xl">:</span>
+          )}
         </div>
       ))}
     </div>

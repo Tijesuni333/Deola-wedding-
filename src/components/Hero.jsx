@@ -12,6 +12,14 @@ export function Hero({ play }) {
   const { t } = useApp()
   const root = useRef(null)
 
+  // Pause the drifting background while the hero is scrolled away.
+  useEffect(() => {
+    const el = root.current
+    const io = new IntersectionObserver(([e]) => el.classList.toggle('blobs-paused', !e.isIntersecting))
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
+
   useEffect(() => {
     if (!play || !root.current) return
     const ctx = gsap.context(() => {

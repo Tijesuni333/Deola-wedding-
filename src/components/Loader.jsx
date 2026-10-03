@@ -10,18 +10,20 @@ import { wedding } from '../config/wedding'
  */
 export function Loader({ onDone }) {
   const { t, startMusic } = useApp()
-  const [pct, setPct] = useState(0)
   const [ready, setReady] = useState(false)
   const root = useRef(null)
+  const bar = useRef(null)
+  const label = useRef(null)
 
   useEffect(() => {
     const counter = { v: 0 }
-    const tween = gsap.to(counter, {
-      v: 90,
-      duration: 1.6,
-      ease: 'power2.out',
-      onUpdate: () => setPct(Math.round(counter.v)),
-    })
+    // Written straight to the DOM: re-rendering React 60 times a second here would compete
+    // with the site mounting underneath, which is what makes phones stutter.
+    const paint = () => {
+      bar.current.style.transform = `scaleX(${counter.v / 100})`
+      label.current.textContent = `${Math.round(counter.v)}%`
+    }
+    const tween = gsap.to(counter, { v: 90, duration: 1.6, ease: 'power2.out', onUpdate: paint })
     let cancelled = false
     Promise.all([document.fonts.ready, new Promise((r) => setTimeout(r, 1400))]).then(() => {
       if (cancelled) return
@@ -30,7 +32,7 @@ export function Loader({ onDone }) {
         v: 100,
         duration: 0.5,
         ease: 'power1.inOut',
-        onUpdate: () => setPct(Math.round(counter.v)),
+        onUpdate: paint,
         onComplete: () => setReady(true),
       })
     })
@@ -57,7 +59,7 @@ export function Loader({ onDone }) {
       role="dialog"
       aria-label={t.loading}
     >
-      <p className="font-display text-3xl italic sm:text-4xl">
+      <p className="px-6 text-center font-display text-3xl italic sm:text-4xl">
         {wedding.couple.partnerA} <span className="text-ink-soft dark:text-moon-soft">&amp;</span> {wedding.couple.partnerB}
       </p>
       {wedding.couple.hashtag && (
@@ -65,10 +67,10 @@ export function Loader({ onDone }) {
       )}
 
       <div className="mt-10 h-px w-48 overflow-hidden bg-accent-soft dark:bg-line-dark">
-        <div className="h-full bg-accent transition-[width] duration-150" style={{ width: `${pct}%` }} />
+        <div ref={bar} className="h-full origin-left scale-x-0 bg-accent" />
       </div>
-      <p className="eyebrow mt-4 tabular-nums opacity-70" aria-live="polite">
-        {pct}%
+      <p ref={label} className="eyebrow mt-4 tabular-nums opacity-70">
+        0%
       </p>
 
       <div className={`mt-10 flex gap-3 transition-opacity duration-700 ${ready ? 'opacity-100' : 'pointer-events-none opacity-0'}`}>

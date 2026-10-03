@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import gsap from 'gsap'
 import { useApp } from '../hooks/useApp'
 import { wedding } from '../config/wedding'
 
@@ -24,11 +23,22 @@ export function PinGate({ onUnlock }) {
   const check = (code) => {
     if (code === wedding.pin) {
       input.current?.blur()
-      gsap.to(root.current, { opacity: 0, duration: 0.6, ease: 'power2.out', onComplete: onUnlock })
+      // Plain Web Animations (no GSAP) keep this screen's code tiny, so it shows up fast.
+      const fade = root.current.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 600, easing: 'ease-out', fill: 'forwards' })
+      fade.onfinish = onUnlock
       return
     }
     setError(true)
-    gsap.fromTo(cells.current, { x: -10 }, { x: 0, duration: 0.5, ease: 'elastic.out(1, 0.3)' })
+    cells.current.animate(
+      [
+        { transform: 'translateX(-10px)' },
+        { transform: 'translateX(8px)' },
+        { transform: 'translateX(-5px)' },
+        { transform: 'translateX(2px)' },
+        { transform: 'none' },
+      ],
+      { duration: 450, easing: 'ease-out' },
+    )
     setTimeout(() => setValue(''), 350)
   }
 
@@ -47,7 +57,7 @@ export function PinGate({ onUnlock }) {
       aria-modal="true"
       aria-labelledby="pin-title"
     >
-      <p className="font-display text-3xl italic sm:text-4xl">
+      <p className="text-center font-display text-3xl italic sm:text-4xl">
         {wedding.couple.partnerA} <span className="text-ink-soft dark:text-moon-soft">&amp;</span> {wedding.couple.partnerB}
       </p>
       <p id="pin-title" className="eyebrow mt-6 text-ink-soft dark:text-moon-soft">

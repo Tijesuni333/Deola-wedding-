@@ -3,9 +3,10 @@
  * the full UI works before a real backend is chosen. Nothing leaves the device.
  */
 
+import { compressImage, ownerId } from './device'
+
 const RSVP_KEY = 'wedding:rsvps'
 const PHOTO_KEY = 'wedding:photos'
-const OWNER_KEY = 'wedding:owner'
 
 const delay = (ms) => new Promise((r) => setTimeout(r, ms))
 
@@ -26,27 +27,6 @@ function write(key, value) {
   }
 }
 
-function ownerId() {
-  let id = read(OWNER_KEY, null)
-  if (!id) {
-    id = crypto.randomUUID()
-    write(OWNER_KEY, id)
-  }
-  return id
-}
-
-/** Downscale images so the localStorage mock doesn't blow its ~5MB quota. */
-async function toCompressedDataUrl(file, maxSide = 1280) {
-  const bitmap = await createImageBitmap(file)
-  const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height))
-  const canvas = document.createElement('canvas')
-  canvas.width = Math.round(bitmap.width * scale)
-  canvas.height = Math.round(bitmap.height * scale)
-  canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height)
-  bitmap.close()
-  return canvas.toDataURL('image/jpeg', 0.8)
-}
-
 export const mockBackend = {
   async submitRsvp(input) {
     await delay(600)
@@ -64,7 +44,8 @@ export const mockBackend = {
   },
 
   async uploadPhoto(file) {
-    const url = await toCompressedDataUrl(file)
+    // Small, so the ~5MB localStorage quota isn't blown.
+    const url = await compressImage(file, 1280, 0.8)
     const photo = { id: crypto.randomUUID(), url, createdAt: Date.now(), owner: ownerId() }
     write(PHOTO_KEY, [...read(PHOTO_KEY, []), photo])
     const { owner: _owner, ...rest } = photo

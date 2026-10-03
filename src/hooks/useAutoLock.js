@@ -9,19 +9,22 @@ const ACTIVITY = ['pointerdown', 'pointermove', 'keydown', 'scroll', 'wheel', 't
 export function useAutoLock(enabled, seconds, onLock) {
   useEffect(() => {
     if (!enabled) return
-    let timer = 0
-    const reset = () => {
-      clearTimeout(timer)
-      if (seconds > 0) timer = setTimeout(onLock, seconds * 1000)
-    }
+    // Activity only stamps a time (these events fire dozens of times a second while scrolling);
+    // a once-a-second check does the rest.
+    let lastActive = Date.now()
+    const touch = () => (lastActive = Date.now())
+    const check =
+      seconds > 0 &&
+      setInterval(() => {
+        if (Date.now() - lastActive >= seconds * 1000) onLock()
+      }, 1000)
     const onVisibility = () => document.visibilityState === 'hidden' && onLock()
 
-    reset()
-    ACTIVITY.forEach((e) => window.addEventListener(e, reset, { passive: true, capture: true }))
+    ACTIVITY.forEach((e) => window.addEventListener(e, touch, { passive: true, capture: true }))
     document.addEventListener('visibilitychange', onVisibility)
     return () => {
-      clearTimeout(timer)
-      ACTIVITY.forEach((e) => window.removeEventListener(e, reset, { capture: true }))
+      clearInterval(check)
+      ACTIVITY.forEach((e) => window.removeEventListener(e, touch, { capture: true }))
       document.removeEventListener('visibilitychange', onVisibility)
     }
     // onLock is an inline setter from App; re-subscribing on every render isn't needed.
