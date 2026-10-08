@@ -27,18 +27,8 @@ export default function Site({ locked }) {
         <WeddingDetails />
       </main>
       <footer className="px-6 pt-20 pb-28 text-center sm:pb-16">
-        <img src="/images/logos/adeoba-dark.png" alt="AdeOba" className="mx-auto mb-6 h-12 w-auto dark:hidden" />
-        <img src="/images/logos/adeoba-light.png" alt="AdeOba" className="mx-auto mb-6 hidden h-12 w-auto dark:block" />
-        <img
-          src="/images/logos/names-dark.png"
-          alt={`${wedding.couple.partnerA} & ${wedding.couple.partnerB}`}
-          className="mx-auto w-full max-w-xs dark:hidden"
-        />
-        <img
-          src="/images/logos/names-light.png"
-          alt={`${wedding.couple.partnerA} & ${wedding.couple.partnerB}`}
-          className="mx-auto hidden w-full max-w-xs dark:block"
-        />
+        <img src="/images/logos/adeoba-dark.png" alt="AdeOba" className="mx-auto h-20 w-auto dark:hidden" />
+        <img src="/images/logos/adeoba-light.png" alt="AdeOba" className="mx-auto hidden h-20 w-auto dark:block" />
         <p className="eyebrow mt-6 text-ink-soft dark:text-moon-soft">{wedding.dateLabel}</p>
         {wedding.couple.hashtag && <p className="eyebrow mt-3 tracking-[0.2em] normal-case text-accent">{wedding.couple.hashtag}</p>}
       </footer>
