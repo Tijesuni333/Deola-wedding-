@@ -46,8 +46,8 @@ export function Hero({ play }) {
       <div aria-hidden className="grain pointer-events-none absolute inset-0 opacity-[0.07]" />
 
       <div className="relative">
-        <p data-hero="fade" className="eyebrow mb-10 text-ink-soft dark:text-moon-soft">
-          {wedding.dateLabel}
+        <p data-hero="fade" className="eyebrow mb-10 normal-case tracking-[0.2em] text-accent">
+          {wedding.couple.hashtag}
         </p>
 
         <h1 data-hero="fade" className="mx-auto w-full max-w-[min(90vw,600px)]">
@@ -63,10 +63,12 @@ export function Hero({ play }) {
           />
         </h1>
 
-        <p data-hero="fade" className="mt-10 font-display text-xl text-ink-soft italic sm:text-2xl dark:text-moon-soft">
+        <p data-hero="fade" className="mt-8 font-display text-xl italic text-ink-soft sm:text-2xl dark:text-moon-soft">
           {t.heroLine1}
-          <br />
-          {t.heroLine2}
+        </p>
+
+        <p data-hero="fade" className="mx-auto mt-6 max-w-md text-base leading-relaxed text-ink-soft dark:text-moon-soft">
+          {t.introNote}
         </p>
       </div>
 

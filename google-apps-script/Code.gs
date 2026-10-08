@@ -5,7 +5,7 @@
  */
 
 const SHEET_NAME = 'RSVPs'
-const HEADERS = ['Submitted', 'Name', 'Email', 'Attending', 'Preferred Meal', 'Message']
+const HEADERS = ['Submitted', 'Name', 'Email', 'Attending', 'Dietary Restrictions', 'Message']
 
 function doPost(e) {
   const lock = LockService.getScriptLock()

@@ -133,16 +133,16 @@ export const wedding = {
     {
       role: 'The Bride',
       name: 'Adeola',
-      bank: 'Placeholder Bank',
-      accountName: 'Adeola Placeholder',
-      accountNumber: '0123456789',
+      bank: 'Opay',
+      accountName: 'Adeola Sorunke',
+      accountNumber: '7089562787',
     },
     {
       role: 'The Groom',
       name: 'Oluwatobiloba',
-      bank: 'Placeholder Bank',
-      accountName: 'Tobi Placeholder',
-      accountNumber: '9876543210',
+      bank: 'GTBank',
+      accountName: 'Adegbite Tobi Gabriel',
+      accountNumber: '0177350044',
     },
   ],
 
