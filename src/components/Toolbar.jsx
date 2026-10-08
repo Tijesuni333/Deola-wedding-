@@ -48,7 +48,6 @@ export function Toolbar() {
   }, [])
 
   const hasLocales = Object.keys(locales).length > 1
-  const logo = wedding.couple.hashtag || `${wedding.couple.partnerA[0]}&${wedding.couple.partnerB[0]}`
 
   return (
     <>
@@ -60,12 +59,9 @@ export function Toolbar() {
         }`}
       >
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-3 sm:px-6">
-          <a
-            href="#home"
-            className="shrink-0 px-1 font-display text-xl whitespace-nowrap italic sm:px-2 sm:text-2xl"
-            aria-label="Back to top"
-          >
-            {logo}
+          <a href="#home" className="shrink-0 px-1 sm:px-2" aria-label="Back to top">
+            <img src="/images/logos/adeoba-dark.png" alt="AdeOba" className="h-8 w-auto dark:hidden" />
+            <img src="/images/logos/adeoba-light.png" alt="AdeOba" className="hidden h-8 w-auto dark:block" />
           </a>
 
           <nav aria-label="Sections" className="hidden items-center gap-8 md:flex">

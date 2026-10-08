@@ -5,7 +5,7 @@
  */
 
 const SHEET_NAME = 'RSVPs'
-const HEADERS = ['Submitted', 'Name', 'Email', 'Attending', 'Plus One', 'Guest Name', 'Dietary', 'Message']
+const HEADERS = ['Submitted', 'Name', 'Email', 'Attending', 'Preferred Meal', 'Message']
 
 function doPost(e) {
   const lock = LockService.getScriptLock()
@@ -28,8 +28,6 @@ function doPost(e) {
       name,
       email,
       data.attending ? 'Yes' : 'No',
-      data.plusOne ? 'Yes' : 'No',
-      clean(data.guestName, 120),
       clean(data.dietary, 300),
       clean(data.message, 1000),
     ])

@@ -38,7 +38,7 @@ const en = {
   plusOne: 'Plus one',
   none: 'None',
   guestName: 'Guest’s full name',
-  dietary: 'Dietary restrictions',
+  dietary: 'Preferred meal',
   message: 'Message (optional)',
   submit: 'Submit RSVP',
   sending: 'Sending…',

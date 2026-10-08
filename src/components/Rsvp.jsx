@@ -8,7 +8,6 @@ import { wedding } from '../config/wedding'
 function RsvpForm({ onClose }) {
   const { t } = useApp()
   const [attending, setAttending] = useState(null)
-  const [plusOne, setPlusOne] = useState(false)
   const [errors, setErrors] = useState({})
   const [status, setStatus] = useState('idle')
 
@@ -21,7 +20,6 @@ function RsvpForm({ onClose }) {
     if (!get('name')) next.name = t.required
     if (!/^\S+@\S+\.\S+$/.test(get('email'))) next.email = t.invalidEmail
     if (attending === null) next.attending = t.chooseAttendance
-    if (attending && plusOne && !get('guestName')) next.guestName = t.required
     setErrors(next)
     if (Object.keys(next).length) return
 
@@ -31,8 +29,6 @@ function RsvpForm({ onClose }) {
         name: get('name'),
         email: get('email'),
         attending: attending,
-        plusOne: attending && plusOne,
-        guestName: attending && plusOne ? get('guestName') : undefined,
         dietary: attending ? get('dietary') || undefined : undefined,
         message: get('message') || undefined,
         website: get('hp_x7') || undefined, // honeypot, see Code.gs
@@ -141,37 +137,10 @@ function RsvpForm({ onClose }) {
         </fieldset>
 
         {attending && (
-          <>
-            {wedding.rsvp.allowPlusOne && (
-              <fieldset>
-                <legend className="eyebrow mb-3 text-[0.6rem] text-ink-soft dark:text-moon-soft">{t.plusOne}</legend>
-                <div className="flex gap-2">
-                  <button type="button" aria-pressed={!plusOne} className={choice(!plusOne)} onClick={() => setPlusOne(false)}>
-                    {t.none}
-                  </button>
-                  <button type="button" aria-pressed={plusOne} className={choice(plusOne)} onClick={() => setPlusOne(true)}>
-                    +1
-                  </button>
-                </div>
-              </fieldset>
-            )}
-            {plusOne && (
-              <label className="block">
-                <span className="eyebrow text-[0.6rem] text-ink-soft dark:text-moon-soft">{t.guestName}</span>
-                <input
-                  name="guestName"
-                  className="field"
-                  aria-invalid={!!errors.guestName}
-                  aria-describedby={errors.guestName ? 'rsvp-guestName-err' : undefined}
-                />
-                {err('guestName')}
-              </label>
-            )}
-            <label className="block">
-              <span className="eyebrow text-[0.6rem] text-ink-soft dark:text-moon-soft">{t.dietary}</span>
-              <input name="dietary" className="field" />
-            </label>
-          </>
+          <label className="block">
+            <span className="eyebrow text-[0.6rem] text-ink-soft dark:text-moon-soft">{t.dietary}</span>
+            <input name="dietary" className="field" />
+          </label>
         )}
 
         <label className="block">

@@ -3,11 +3,6 @@ import gsap from 'gsap'
 import { useApp } from '../hooks/useApp'
 import { wedding } from '../config/wedding'
 
-const longest = Math.max(wedding.couple.partnerA.length, wedding.couple.partnerB.length)
-/** 16vw suits ~6-letter names; longer names shrink so they never overflow a phone screen. */
-const nameVw = Math.min(16, 140 / longest)
-const nameSize = `clamp(${(nameVw / 4).toFixed(2)}rem, ${nameVw.toFixed(1)}vw, ${(nameVw * 0.69).toFixed(2)}rem)`
-
 export function Hero({ play }) {
   const { t } = useApp()
   const root = useRef(null)
@@ -23,12 +18,9 @@ export function Hero({ play }) {
   useEffect(() => {
     if (!play || !root.current) return
     const ctx = gsap.context(() => {
-      // force3D keeps each line on its own GPU layer, so the big serif text and the grain
-      // overlay aren't repainted every frame; clearProps drops the layers once it's done.
       gsap
         .timeline({ defaults: { ease: 'power3.out', force3D: true, clearProps: 'transform,opacity' } })
-        .from('[data-hero="line"]', { yPercent: 110, duration: 1.2, stagger: 0.12 }, 0.05)
-        .from('[data-hero="fade"]', { opacity: 0, y: 16, duration: 1, stagger: 0.1 }, '-=0.8')
+        .from('[data-hero="fade"]', { opacity: 0, y: 24, duration: 1.2, stagger: 0.15 }, 0.1)
     }, root)
     return () => ctx.revert()
   }, [play])
@@ -54,26 +46,21 @@ export function Hero({ play }) {
       <div aria-hidden className="grain pointer-events-none absolute inset-0 opacity-[0.07]" />
 
       <div className="relative">
-        <p data-hero="fade" className="eyebrow mb-8 text-ink-soft dark:text-moon-soft">
+        <p data-hero="fade" className="eyebrow mb-10 text-ink-soft dark:text-moon-soft">
           {wedding.dateLabel}
         </p>
 
-        <h1 className="font-display leading-[0.9] font-normal">
-          <span className="block overflow-hidden">
-            <span data-hero="line" className="block" style={{ fontSize: nameSize }}>
-              {wedding.couple.partnerA}
-            </span>
-          </span>
-          <span className="block overflow-hidden">
-            <span data-hero="line" className="block text-[clamp(2.5rem,8vw,5rem)] text-accent italic">
-              &amp;
-            </span>
-          </span>
-          <span className="block overflow-hidden">
-            <span data-hero="line" className="block" style={{ fontSize: nameSize }}>
-              {wedding.couple.partnerB}
-            </span>
-          </span>
+        <h1 data-hero="fade" className="mx-auto w-full max-w-[min(90vw,600px)]">
+          <img
+            src="/images/logos/names-dark.png"
+            alt={`${wedding.couple.partnerA} & ${wedding.couple.partnerB}`}
+            className="w-full dark:hidden"
+          />
+          <img
+            src="/images/logos/names-light.png"
+            alt={`${wedding.couple.partnerA} & ${wedding.couple.partnerB}`}
+            className="hidden w-full dark:block"
+          />
         </h1>
 
         <p data-hero="fade" className="mt-10 font-display text-xl text-ink-soft italic sm:text-2xl dark:text-moon-soft">
