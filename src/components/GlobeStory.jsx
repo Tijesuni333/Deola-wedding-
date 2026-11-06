@@ -18,9 +18,26 @@ export function GlobeStory() {
   const index = stops.findIndex((s) => s.id === activeId)
   const active = index >= 0 ? stops[index] : null
 
+  // Phones: the card sits below the globe, so tapping a memory on the globe scrolls down to its story.
+  const scrollToCard = useRef(false)
+  const revealCard = () => {
+    const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    card.current?.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' })
+  }
+  const pickFromGlobe = (id) => {
+    if (!window.matchMedia('(max-width: 1023px)').matches) return setActiveId(id)
+    if (id === activeId) return revealCard()
+    scrollToCard.current = true
+    setActiveId(id)
+  }
+
   useEffect(() => {
     if (!card.current) return
     gsap.fromTo(card.current, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.8, ease: 'expo.out' })
+    if (scrollToCard.current) {
+      scrollToCard.current = false
+      revealCard()
+    }
   }, [activeId])
 
   const go = (dir) => {
@@ -58,7 +75,7 @@ export function GlobeStory() {
 
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[1.1fr_1fr]">
             <div data-reveal>
-              <Globe stops={stops} activeId={activeId} dark={theme === 'dark'} onSelect={setActiveId} />
+              <Globe stops={stops} activeId={activeId} dark={theme === 'dark'} onSelect={pickFromGlobe} />
             </div>
 
             <div className="min-h-[420px] min-w-0">
@@ -96,7 +113,7 @@ export function GlobeStory() {
               </div>
 
               {active ? (
-                <div ref={card} key={active.id} role="tabpanel" aria-live="polite">
+                <div ref={card} key={active.id} role="tabpanel" aria-live="polite" className="scroll-mt-24">
                   <div className="grid grid-cols-2 gap-3 lg:max-w-[calc(60svh*3/4+0.75rem)]">
                     {(active.photos.length ? active.photos : ['', '']).slice(0, 2).map((src, i) => (
                       <div key={i} className={`aspect-[3/4] overflow-hidden rounded-sm ${i === 0 ? '' : 'mt-10 lg:mt-4'}`}>
