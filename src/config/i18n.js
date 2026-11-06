@@ -14,6 +14,8 @@ const en = {
   introNote: 'God is the King and He has placed His crown of love upon our heads. Inspired by Psalm 103:4, our story is built on the reality of a love that flows directly from our Father, who Himself is Love. This union is a living testimony of His divine grace, lovingkindness and steadfast devotion.',
   globeHint: 'Spin the globe to find our hidden moments.',
   globeSelect: 'Select a memory to start.',
+  readStory: 'Read our story',
+  nextMemory: 'Next',
   newAdventure1: 'And now,',
   newAdventure2: 'our new adventure begins.',
   months: 'Months',

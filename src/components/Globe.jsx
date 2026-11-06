@@ -211,14 +211,16 @@ export function Globe({ stops, activeId, dark, onSelect }) {
       />
       {/* Clickable memory labels pinned to markers via CSS anchor positioning (progressive enhancement).
           Kept solid (no blur effects): they move every frame, and blur is costly to redraw on phones. */}
-      {stops.map((st) => (
+      {/* Phones: inactive memories show as numbered dots so 8 long titles don't pile on top of each other;
+          only the selected one shows its full title. */}
+      {stops.map((st, i) => (
         <button
           key={st.id}
           onClick={() => onSelect(st.id)}
-          className={`globe-label eyebrow absolute rounded-full px-3 py-1.5 text-[0.6rem] whitespace-nowrap transition-opacity duration-300 hover:bg-accent hover:text-paper dark:hover:text-night ${
+          className={`globe-label eyebrow absolute rounded-full text-[0.6rem] whitespace-nowrap transition-opacity duration-300 hover:bg-accent hover:text-paper dark:hover:text-night ${
             st.id === activeId
-              ? 'z-10 bg-accent text-paper dark:text-night'
-              : 'border border-line bg-paper text-ink dark:border-line-dark dark:bg-night-2 dark:text-moon'
+              ? 'z-10 bg-accent px-3 py-1.5 text-paper dark:text-night'
+              : 'border border-line bg-paper px-2 py-1 tracking-[0.1em] text-ink sm:px-3 sm:py-1.5 sm:tracking-[0.35em] dark:border-line-dark dark:bg-night-2 dark:text-moon'
           }`}
           style={{
             positionAnchor: `--cobe-${st.id}`,
@@ -231,7 +233,14 @@ export function Globe({ stops, activeId, dark, onSelect }) {
           tabIndex={-1}
           aria-hidden
         >
-          {st.title}
+          {st.id === activeId ? (
+            st.title
+          ) : (
+            <>
+              <span className="sm:hidden">{String(i + 1).padStart(2, '0')}</span>
+              <span className="hidden sm:inline">{st.title}</span>
+            </>
+          )}
         </button>
       ))}
     </div>
