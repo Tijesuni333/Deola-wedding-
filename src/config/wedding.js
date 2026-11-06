@@ -51,7 +51,9 @@ export const wedding = {
    * Order matters: arcs are drawn from each stop to the next.
    * Get coordinates by right-clicking a spot in Google Maps.
    * An empty array hides the globe and keeps just the closing line.
-   * Keep stops roughly 45° apart (lat or lng) so their labels don't overlap on the globe.
+   * Cities here are only for spacing (they aren't shown). The globe spins sideways, so keep every stop at least
+   * ~30° of LONGITUDE from the others: two stops stacked north–south face the front together and can't both be
+   * spotlit on phones. The globe turns westward, so stops are laid out east→west to be spotlit in story order.
    */
   story: [
     {
@@ -69,9 +71,9 @@ export const wedding = {
     },
     {
       id: 'how-we-met',
-      city: 'London',
+      city: 'Rio de Janeiro',
       title: 'How We Met',
-      coords: [51.5072, -0.1276],
+      coords: [-22.9068, -43.1729],
       year: '2019',
       caption: 'A mysterious “Bro Tobi”, a DM about a client, and a grant-writing seminar that finally connected the dots.',
       photos: [],
@@ -94,45 +96,45 @@ export const wedding = {
     },
     {
       id: 'said-yes',
-      city: 'Honolulu',
+      city: 'Los Angeles',
       title: 'The Day I Said Yes',
-      coords: [21.3069, -157.8583],
+      coords: [34.0522, -118.2437],
       year: '2020',
       caption: 'Placeholder — the day we made it official.',
       photos: [],
     },
     {
       id: 'first-kiss',
-      city: 'Tokyo',
+      city: 'Honolulu',
       title: 'Our First Kiss',
-      coords: [35.6762, 139.6503],
+      coords: [21.3069, -157.8583],
       year: '2021',
       caption: 'Placeholder — the moment we’ll never forget.',
       photos: [],
     },
     {
       id: 'proposal',
-      city: 'Sydney',
+      city: 'Tokyo',
       title: 'The Proposal',
-      coords: [-33.8688, 151.2093],
+      coords: [35.6762, 139.6503],
       year: '2025',
       caption: 'Placeholder — the question, the ring, and the yes.',
       photos: [],
     },
     {
       id: 'introduction',
-      city: 'Dubai',
+      city: 'Bangkok',
       title: 'Introduction',
-      coords: [25.2048, 55.2708],
+      coords: [13.7563, 100.5018],
       year: '2025',
       caption: 'Placeholder — our families came together to celebrate us.',
       photos: [],
     },
     {
       id: 'best-memories',
-      city: 'Mauritius',
+      city: 'Dubai',
       title: 'Our Best Memories Together',
-      coords: [-20.3484, 57.5522],
+      coords: [25.2048, 55.2708],
       year: '2026',
       caption: 'Placeholder — the trips, the laughs, and everything in between.',
       photos: [],

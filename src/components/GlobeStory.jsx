@@ -68,7 +68,7 @@ export function GlobeStory() {
                 aria-label="Our memories"
                 className="mb-8 flex flex-wrap gap-2 lg:mb-5"
               >
-                {stops.map((s, i) => (
+                {stops.map((s) => (
                   <button
                     key={s.id}
                     role="tab"
@@ -81,8 +81,16 @@ export function GlobeStory() {
                         : 'border-line hover:border-accent hover:text-accent dark:border-line-dark'
                     }`}
                   >
-                    <span className="mr-2 opacity-60 sm:hidden">{String(i + 1).padStart(2, '0')}</span>
-                    {s.title}
+                    <span className="inline-flex items-center gap-2">
+                      <Icon
+                        name="heart"
+                        width={11}
+                        height={11}
+                        fill="currentColor"
+                        className={s.id === activeId ? '' : 'text-accent'}
+                      />
+                      {s.title}
+                    </span>
                   </button>
                 ))}
               </div>

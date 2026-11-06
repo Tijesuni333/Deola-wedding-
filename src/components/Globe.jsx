@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import createGlobe from 'cobe'
+import { Icon } from './Icon'
 
 /** cobe's convention for centring a lat/lng in front of the camera. */
 function anglesFor([lat, lng]) {
@@ -59,6 +60,7 @@ export function Globe({ stops, activeId, dark, onSelect }) {
   const globe = useRef(null)
   // Phones spotlight the memory facing the viewer with its full title; the rest show as numbers.
   const [frontId, setFrontId] = useState(null)
+  const [moving, setMoving] = useState(false)
 
   // Mutable animation state lives in a ref so React re-renders don't reset it.
   const s = useRef({
@@ -140,6 +142,8 @@ export function Globe({ stops, activeId, dark, onSelect }) {
       if (now - lastFront > 200) {
         lastFront = now
         setFrontId(frontStop(stops, st.phi, st.theta))
+        // Flying to a picked memory doesn't count as moving: that memory keeps the spotlight until spin resumes.
+        setMoving(st.dragX !== null || st.spin > 0.05 || Math.abs(st.velocity) > 0.05)
       }
       // Redraw every frame while moving; skip when nothing changed (e.g. reduced motion) to save battery.
       if (Math.abs(st.phi - drawn.phi) > 1e-5 || Math.abs(st.theta - drawn.theta) > 1e-5 || drawn.w !== width * dpr) {
@@ -237,21 +241,23 @@ export function Globe({ stops, activeId, dark, onSelect }) {
       />
       {/* Clickable memory labels pinned to markers via CSS anchor positioning (progressive enhancement).
           Kept solid (no blur effects): they move every frame, and blur is costly to redraw on phones. */}
-      {/* Phones: only the selected memory (or, with none selected, the one facing the viewer) shows its
-          full title; the others are numbered dots, so 8 long titles never pile on top of each other. */}
-      {stops.map((st, i) => {
+      {/* Phones: one memory at a time shows its full title, the rest are little hearts, so 8 long titles never
+          pile up. While the globe is still, that's the selected memory; once it moves (spin resumes or a drag),
+          the spotlight follows whichever memory faces the viewer. Desktop shows every title. */}
+      {stops.map((st) => {
         const active = st.id === activeId
-        const spotlit = !active && !activeId && st.id === frontId
+        const titled = st.id === (activeId && !moving ? activeId : frontId)
+        const look = active
+          ? 'bg-accent text-paper dark:text-night'
+          : titled
+            ? 'border border-accent bg-paper text-accent dark:bg-night-2'
+            : 'border border-line bg-paper text-ink dark:border-line-dark dark:bg-night-2 dark:text-moon'
         return (
           <button
             key={st.id}
             onClick={() => onSelect(st.id)}
-            className={`globe-label eyebrow absolute rounded-full text-[0.6rem] whitespace-nowrap transition-opacity duration-300 hover:bg-accent hover:text-paper dark:hover:text-night ${
-              active
-                ? 'z-10 bg-accent px-3 py-1.5 text-paper dark:text-night'
-                : `border border-line bg-paper text-ink sm:px-3 sm:py-1.5 sm:tracking-[0.35em] dark:border-line-dark dark:bg-night-2 dark:text-moon ${
-                    spotlit ? 'z-10 border-accent px-3 py-1.5 text-accent' : 'px-2 py-1 tracking-[0.1em]'
-                  }`
+            className={`globe-label eyebrow absolute rounded-full text-[0.6rem] whitespace-nowrap transition-opacity duration-300 hover:bg-accent hover:text-paper dark:hover:text-night ${look} ${
+              titled ? 'z-10 px-3 py-1.5' : 'p-1.5 leading-none sm:px-3 sm:py-1.5'
             }`}
             style={{
               positionAnchor: `--cobe-${st.id}`,
@@ -264,11 +270,17 @@ export function Globe({ stops, activeId, dark, onSelect }) {
             tabIndex={-1}
             aria-hidden
           >
-            {active || spotlit ? (
+            {titled ? (
               st.title
             ) : (
               <>
-                <span className="sm:hidden">{String(i + 1).padStart(2, '0')}</span>
+                <Icon
+                  name="heart"
+                  width={11}
+                  height={11}
+                  fill="currentColor"
+                  className={`sm:hidden ${active ? '' : 'text-accent'}`}
+                />
                 <span className="hidden sm:inline">{st.title}</span>
               </>
             )}
