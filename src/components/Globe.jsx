@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import createGlobe from 'cobe'
 
 /** cobe's convention for centring a lat/lng in front of the camera. */
@@ -6,12 +6,29 @@ function anglesFor([lat, lng]) {
   return { phi: Math.PI - ((lng * Math.PI) / 180 - Math.PI / 2), theta: (lat * Math.PI) / 180 }
 }
 
+/** The stop nearest the middle of the view (within ~55°), or null. Inverse of anglesFor. */
+function frontStop(stops, phi, theta) {
+  const lng = (3 * Math.PI) / 2 - phi
+  let best = null
+  let bestCos = Math.cos((55 * Math.PI) / 180)
+  for (const st of stops) {
+    const la = (st.coords[0] * Math.PI) / 180
+    const lo = (st.coords[1] * Math.PI) / 180
+    const c = Math.sin(theta) * Math.sin(la) + Math.cos(theta) * Math.cos(la) * Math.cos(lo - lng)
+    if (c > bestCos) {
+      bestCos = c
+      best = st.id
+    }
+  }
+  return best
+}
+
 const TAU = Math.PI * 2
 /** Shortest signed distance between two angles, so the globe never spins the long way round. */
 const angleDelta = (from, to) => ((((to - from) % TAU) + TAU + Math.PI) % TAU) - Math.PI
 
 /** Auto-rotation speed (radians / second). */
-const SPIN = 0.2
+const SPIN = 0.35 // ~18s per turn, so each memory gets ~2s in the phone spotlight
 /** Pause before auto-rotation resumes after a drag, or after flying to a memory (ms). */
 const RESUME_AFTER_DRAG = 1500
 const RESUME_AFTER_SELECT = 5000
@@ -40,6 +57,8 @@ const themes = {
 export function Globe({ stops, activeId, dark, onSelect }) {
   const canvas = useRef(null)
   const globe = useRef(null)
+  // Phones spotlight the memory facing the viewer with its full title; the rest show as numbers.
+  const [frontId, setFrontId] = useState(null)
 
   // Mutable animation state lives in a ref so React re-renders don't reset it.
   const s = useRef({
@@ -58,8 +77,12 @@ export function Globe({ stops, activeId, dark, onSelect }) {
 
   useEffect(() => {
     const el = canvas.current
+    // Phones: draw at 2x instead of 3x. Still sharp at globe size, and less than half the pixels,
+    // which is what lets them draw every frame for a smooth spin instead of dropping to 30fps.
+    const touch = window.matchMedia('(pointer: coarse)').matches
+    const maxDpr = touch ? 2 : 3
     let width = el.offsetWidth
-    let dpr = Math.min(window.devicePixelRatio || 1, 3, MAX_PIXELS / width)
+    let dpr = Math.min(window.devicePixelRatio || 1, maxDpr, MAX_PIXELS / width)
     const theme = dark ? themes.dark : themes.light
 
     const g = createGlobe(el, {
@@ -83,9 +106,8 @@ export function Globe({ stops, activeId, dark, onSelect }) {
     globe.current = g
 
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    // Phones: while the globe is only drifting on its own, 30fps looks the same and halves the GPU work.
-    const touch = window.matchMedia('(pointer: coarse)').matches
-    let lastDraw = 0
+    let drawn = { phi: NaN, theta: NaN, w: 0 }
+    let lastFront = 0
     let raf = 0
     let last = performance.now()
     let visible = true
@@ -115,10 +137,14 @@ export function Globe({ stops, activeId, dark, onSelect }) {
         st.phi += st.spin * dt
       }
       st.theta += (st.targetTheta - st.theta) * ease
-      const busy = st.dragX !== null || st.targetPhi !== null || Math.abs(st.velocity) > 0.05
-      if (busy || !touch || now - lastDraw >= 32) {
+      if (now - lastFront > 200) {
+        lastFront = now
+        setFrontId(frontStop(stops, st.phi, st.theta))
+      }
+      // Redraw every frame while moving; skip when nothing changed (e.g. reduced motion) to save battery.
+      if (Math.abs(st.phi - drawn.phi) > 1e-5 || Math.abs(st.theta - drawn.theta) > 1e-5 || drawn.w !== width * dpr) {
         g.update({ phi: st.phi, theta: st.theta, width: width * dpr, height: width * dpr })
-        lastDraw = now
+        drawn = { phi: st.phi, theta: st.theta, w: width * dpr }
       }
       raf = visible ? requestAnimationFrame(tick) : 0
     }
@@ -136,7 +162,7 @@ export function Globe({ stops, activeId, dark, onSelect }) {
 
     const ro = new ResizeObserver(() => {
       width = el.offsetWidth
-      dpr = Math.min(window.devicePixelRatio || 1, 3, MAX_PIXELS / width)
+      dpr = Math.min(window.devicePixelRatio || 1, maxDpr, MAX_PIXELS / width)
     })
     ro.observe(el)
     requestAnimationFrame(() => (el.style.opacity = '1'))
@@ -211,38 +237,44 @@ export function Globe({ stops, activeId, dark, onSelect }) {
       />
       {/* Clickable memory labels pinned to markers via CSS anchor positioning (progressive enhancement).
           Kept solid (no blur effects): they move every frame, and blur is costly to redraw on phones. */}
-      {/* Phones: inactive memories show as numbered dots so 8 long titles don't pile on top of each other;
-          only the selected one shows its full title. */}
-      {stops.map((st, i) => (
-        <button
-          key={st.id}
-          onClick={() => onSelect(st.id)}
-          className={`globe-label eyebrow absolute rounded-full text-[0.6rem] whitespace-nowrap transition-opacity duration-300 hover:bg-accent hover:text-paper dark:hover:text-night ${
-            st.id === activeId
-              ? 'z-10 bg-accent px-3 py-1.5 text-paper dark:text-night'
-              : 'border border-line bg-paper px-2 py-1 tracking-[0.1em] text-ink sm:px-3 sm:py-1.5 sm:tracking-[0.35em] dark:border-line-dark dark:bg-night-2 dark:text-moon'
-          }`}
-          style={{
-            positionAnchor: `--cobe-${st.id}`,
-            bottom: 'anchor(top)',
-            left: 'anchor(center)',
-            translate: '-50% -6px',
-            opacity: `var(--cobe-visible-${st.id}, 0)`,
-            pointerEvents: 'auto',
-          }}
-          tabIndex={-1}
-          aria-hidden
-        >
-          {st.id === activeId ? (
-            st.title
-          ) : (
-            <>
-              <span className="sm:hidden">{String(i + 1).padStart(2, '0')}</span>
-              <span className="hidden sm:inline">{st.title}</span>
-            </>
-          )}
-        </button>
-      ))}
+      {/* Phones: only the selected memory (or, with none selected, the one facing the viewer) shows its
+          full title; the others are numbered dots, so 8 long titles never pile on top of each other. */}
+      {stops.map((st, i) => {
+        const active = st.id === activeId
+        const spotlit = !active && !activeId && st.id === frontId
+        return (
+          <button
+            key={st.id}
+            onClick={() => onSelect(st.id)}
+            className={`globe-label eyebrow absolute rounded-full text-[0.6rem] whitespace-nowrap transition-opacity duration-300 hover:bg-accent hover:text-paper dark:hover:text-night ${
+              active
+                ? 'z-10 bg-accent px-3 py-1.5 text-paper dark:text-night'
+                : `border border-line bg-paper text-ink sm:px-3 sm:py-1.5 sm:tracking-[0.35em] dark:border-line-dark dark:bg-night-2 dark:text-moon ${
+                    spotlit ? 'z-10 border-accent px-3 py-1.5 text-accent' : 'px-2 py-1 tracking-[0.1em]'
+                  }`
+            }`}
+            style={{
+              positionAnchor: `--cobe-${st.id}`,
+              bottom: 'anchor(top)',
+              left: 'anchor(center)',
+              translate: '-50% -6px',
+              opacity: `var(--cobe-visible-${st.id}, 0)`,
+              pointerEvents: 'auto',
+            }}
+            tabIndex={-1}
+            aria-hidden
+          >
+            {active || spotlit ? (
+              st.title
+            ) : (
+              <>
+                <span className="sm:hidden">{String(i + 1).padStart(2, '0')}</span>
+                <span className="hidden sm:inline">{st.title}</span>
+              </>
+            )}
+          </button>
+        )
+      })}
     </div>
   )
 }

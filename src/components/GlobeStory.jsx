@@ -14,7 +14,6 @@ export function GlobeStory() {
   const [activeId, setActiveId] = useState(null)
   const [reading, setReading] = useState(false)
   const card = useRef(null)
-  const tabs = useRef(null)
 
   const index = stops.findIndex((s) => s.id === activeId)
   const active = index >= 0 ? stops[index] : null
@@ -22,14 +21,6 @@ export function GlobeStory() {
   useEffect(() => {
     if (!card.current) return
     gsap.fromTo(card.current, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.8, ease: 'expo.out' })
-  }, [activeId])
-
-  // Keep the selected memory visible in the sideways-scrolling row on phones (without scrolling the page).
-  useEffect(() => {
-    const row = tabs.current
-    const el = row?.querySelector(`[data-id="${activeId}"]`)
-    if (!row || !el || row.scrollWidth <= row.clientWidth) return
-    row.scrollTo({ left: el.offsetLeft - row.clientWidth / 2 + el.offsetWidth / 2, behavior: 'smooth' })
   }, [activeId])
 
   const go = (dir) => {
@@ -72,12 +63,10 @@ export function GlobeStory() {
 
             <div className="min-h-[420px] min-w-0">
               {/* City picker — always visible so keyboard and screen-reader users can navigate the story. */}
-              {/* Phones: one sideways-scrolling row instead of six wrapped rows. */}
               <div
-                ref={tabs}
                 role="tablist"
                 aria-label="Our memories"
-                className="no-scrollbar -mx-6 mb-8 flex snap-x gap-2 overflow-x-auto px-6 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 lg:mb-5"
+                className="mb-8 flex flex-wrap gap-2 lg:mb-5"
               >
                 {stops.map((s, i) => (
                   <button
@@ -86,7 +75,7 @@ export function GlobeStory() {
                     data-id={s.id}
                     aria-selected={s.id === activeId}
                     onClick={() => setActiveId(s.id)}
-                    className={`eyebrow shrink-0 snap-start rounded-full border px-4 py-2 text-[0.62rem] transition-colors ${
+                    className={`eyebrow rounded-full border px-4 py-2 text-[0.62rem] transition-colors ${
                       s.id === activeId
                         ? 'border-accent bg-accent text-paper dark:text-night'
                         : 'border-line hover:border-accent hover:text-accent dark:border-line-dark'

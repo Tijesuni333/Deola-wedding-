@@ -82,14 +82,6 @@
   }
 }
 
-/* Sideways-scrolling rows on phones without a visible scrollbar. */
-.no-scrollbar {
-  scrollbar-width: none;
-}
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
 /* City labels on the globe need CSS anchor positioning; hide them where it's unsupported. */
 .globe-label {
   display: none;
