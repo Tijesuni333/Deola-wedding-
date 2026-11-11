@@ -73,7 +73,7 @@ export function Hero({ play }) {
   }, [])
 
   return (
-    <section ref={root} id="home" className="relative flex min-h-svh flex-col items-center overflow-hidden text-center">
+    <section ref={root} id="home" className="relative flex flex-col sm:min-h-svh items-center overflow-hidden text-center">
       {/* Background: optional video, otherwise a slow drifting gradient. */}
       {wedding.heroVideo ? (
         <video
@@ -92,13 +92,14 @@ export function Hero({ play }) {
       )}
       <div aria-hidden className="grain pointer-events-none absolute inset-0 opacity-[0.07]" />
 
-      {/* Photo band: the couple's portrait under a cocoa tint, with the names on top. Starts below the fixed header. */}
+      {/* Photo band: the couple's portrait under a cocoa tint, with the names on top. Starts below the fixed header.
+          Phones: the band takes the photo's own shape so the whole picture shows (both of them, uncropped). */}
       <div
         ref={bandRef}
-        className="relative mt-16 flex h-[64svh] w-full items-center justify-center overflow-hidden px-6 sm:h-[max(30rem,min(78svh,50vw))]"
+        className="relative mt-16 flex aspect-[2048/1384] w-full items-center justify-center overflow-hidden px-6 sm:aspect-auto sm:h-[max(30rem,min(78svh,50vw))]"
       >
         {/* Outer layer follows the cursor; the photo inside does the intro zoom. */}
-        <div ref={layerRef} aria-hidden className="absolute -inset-6 will-change-transform">
+        <div ref={layerRef} aria-hidden className="absolute inset-0 will-change-transform sm:-inset-6">
           <img
             data-hero="photo"
             src="/images/hero/couple-2048.jpg"
@@ -106,21 +107,21 @@ export function Hero({ play }) {
             sizes="100vw"
             alt=""
             fetchPriority="high"
-            className="absolute inset-0 h-full w-full object-cover object-[80%_30%] sm:object-[center_30%]"
+            className="absolute inset-0 h-full w-full object-cover sm:object-[center_30%]"
           />
         </div>
         <div aria-hidden className="absolute inset-0 bg-[#573831]/70" />
 
         <div className="relative">
-          <p data-hero="fade" className="eyebrow mb-8 text-sm normal-case tracking-[0.2em] text-paper sm:mb-10 sm:text-base">
+          <p data-hero="fade" className="eyebrow mb-3 text-xs normal-case tracking-[0.2em] text-paper sm:mb-10 sm:text-base">
             {wedding.couple.hashtag}
           </p>
 
-          <h1 data-hero="fade" className="mx-auto w-full max-w-[min(85vw,600px)]">
+          <h1 data-hero="fade" className="mx-auto w-[72vw] max-w-[600px] sm:w-full sm:max-w-[min(85vw,600px)]">
             <img src="/images/logos/names-light.png" alt={`${wedding.couple.partnerA} & ${wedding.couple.partnerB}`} className="w-full" />
           </h1>
 
-          <p data-hero="fade" className="mt-6 font-display text-2xl italic text-paper sm:mt-8 sm:text-4xl">
+          <p data-hero="fade" className="mt-3 font-display text-lg italic text-paper sm:mt-8 sm:text-4xl">
             {t.heroLine1}
           </p>
         </div>

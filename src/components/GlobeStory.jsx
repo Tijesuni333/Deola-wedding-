@@ -18,7 +18,6 @@ export function GlobeStory() {
   const [activeId, setActiveId] = useState(null)
   const [reading, setReading] = useState(false)
   const card = useRef(null)
-  const chips = useRef(null)
 
   const index = stops.findIndex((s) => s.id === activeId)
   const active = index >= 0 ? stops[index] : null
@@ -35,14 +34,6 @@ export function GlobeStory() {
     scrollToCard.current = true
     setActiveId(id)
   }
-
-  // Keep the selected memory's button in view in the swipeable row (horizontal only: never scrolls the page).
-  useEffect(() => {
-    const row = chips.current
-    const chip = row?.querySelector(`[data-id="${activeId}"]`)
-    if (!row || !chip || row.scrollWidth <= row.clientWidth) return
-    row.scrollTo({ left: chip.offsetLeft - (row.clientWidth - chip.offsetWidth) / 2, behavior: 'smooth' })
-  }, [activeId])
 
   useEffect(() => {
     if (!card.current) return
@@ -93,13 +84,8 @@ export function GlobeStory() {
 
             <div className="min-h-[420px] min-w-0">
               {/* City picker — always visible so keyboard and screen-reader users can navigate the story. */}
-              {/* Phones: one swipeable row (seven stacked rows pushed the story far down); desktop wraps. */}
-              <div
-                ref={chips}
-                role="tablist"
-                aria-label="Our memories"
-                className="relative -mx-6 mb-8 flex snap-x gap-2 overflow-x-auto px-6 pb-1 [scrollbar-width:none] [mask-image:linear-gradient(to_right,transparent,black_1.5rem,black_calc(100%-2.5rem),transparent)] lg:mx-0 lg:mb-5 lg:flex-wrap lg:overflow-visible lg:px-0 lg:[mask-image:none] [&::-webkit-scrollbar]:hidden"
-              >
+              {/* Stacked rows; on phones the buttons stretch so each row fills the width evenly (two per row where they fit). */}
+              <div role="tablist" aria-label="Our memories" className="mb-8 flex flex-wrap gap-2 lg:mb-5">
                 {stops.map((s) => (
                   <button
                     key={s.id}
@@ -107,13 +93,13 @@ export function GlobeStory() {
                     data-id={s.id}
                     aria-selected={s.id === activeId}
                     onClick={() => setActiveId(s.id)}
-                    className={`eyebrow shrink-0 snap-start scroll-ml-6 rounded-full border px-4 py-2 text-[0.62rem] whitespace-nowrap transition-colors ${
+                    className={`eyebrow grow rounded-full border px-3 py-2.5 text-[0.6rem] tracking-[0.14em] whitespace-nowrap transition-colors sm:grow-0 sm:px-4 sm:py-2 sm:text-[0.62rem] sm:tracking-[0.35em] ${
                       s.id === activeId
                         ? 'border-accent bg-accent text-paper dark:text-night'
                         : 'border-line hover:border-accent hover:text-accent dark:border-line-dark'
                     }`}
                   >
-                    <span className="inline-flex items-center gap-2">
+                    <span className="inline-flex items-center justify-center gap-2">
                       <Icon name="heart" width={11} height={11} fill="currentColor" className={s.id === activeId ? '' : 'text-accent'} />
                       {s.title}
                     </span>
