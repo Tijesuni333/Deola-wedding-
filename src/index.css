@@ -148,3 +148,52 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Memory ball lighting. cobe draws the sphere at 80% of the canvas (inset 10%); these layers sit
+   on top of / under it to give a pearl look. All non-interactive so dragging still reaches the canvas. */
+.ball-ground,
+.ball-shade,
+.ball-shine {
+  position: absolute;
+  border-radius: 9999px;
+  pointer-events: none;
+}
+.ball-ground {
+  left: 24%;
+  right: 24%;
+  bottom: 3%;
+  height: 7%;
+  background: radial-gradient(closest-side, rgb(87 56 49 / 0.3), transparent);
+  filter: blur(6px);
+}
+.ball-shade {
+  inset: 10%;
+  background: radial-gradient(circle at 34% 28%, transparent 25%, rgb(87 56 49 / 0.12) 60%, rgb(87 56 49 / 0.42) 100%);
+  mix-blend-mode: multiply;
+}
+.ball-shine {
+  inset: 10%;
+  background: radial-gradient(circle at 33% 27%, rgb(255 250 240 / 0.9), rgb(255 245 230 / 0.3) 16%, transparent 42%);
+  mix-blend-mode: soft-light;
+}
+.ball-shine::after {
+  content: '';
+  position: absolute;
+  left: 24%;
+  top: 16%;
+  width: 16%;
+  height: 10%;
+  border-radius: 9999px;
+  background: rgb(255 255 255 / 0.55);
+  filter: blur(7px);
+  transform: rotate(-30deg);
+}
+.dark .ball-ground {
+  background: radial-gradient(closest-side, rgb(0 0 0 / 0.7), transparent);
+}
+.dark .dark .dark .ball-shade {
+  background: radial-gradient(circle at 34% 28%, transparent 25%, rgb(0 0 0 / 0.25) 60%, rgb(0 0 0 / 0.6) 100%);
+}
+.dark .ball-shine::after {
+  background: rgb(255 235 220 / 0.22);
+}

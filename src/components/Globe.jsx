@@ -36,28 +36,53 @@ const RESUME_AFTER_SELECT = 5000
 /** Largest canvas backing size in device pixels — sharp on 3x phones without overloading the GPU. */
 const MAX_PIXELS = 1600
 
+// A plain ball: cobe's world-map dots are switched off (mapBrightness ~0, since cobe treats 0 as "default"),
+// leaving a softly shaded sphere with only the memory markers on it. `dark: 0` in both themes keeps that
+// shading; cobe's own dark mode would render a map-less ball almost black.
+const NO_MAP = 1e-6
 const themes = {
   light: {
     dark: 0,
-    baseColor: [0.96, 0.96, 0.86], // beige #f5f5dc
-    glowColor: [1, 1, 0.94], // ivory #fffff0
+    baseColor: [0.97, 0.93, 0.85], // pearl
+    glowColor: [0.98, 0.93, 0.82],
     markerColor: [0.34, 0.22, 0.19], // cocoa #573831
-    mapBrightness: 5,
-    diffuse: 1.1,
+    patternColor: [0.78, 0.66, 0.55],
+    mapBrightness: NO_MAP,
+    diffuse: 1.2,
   },
   dark: {
-    dark: 1,
-    baseColor: [0.55, 0.45, 0.38],
-    glowColor: [0.13, 0.1, 0.09],
-    markerColor: [0.79, 0.64, 0.56], // dark-mode accent #c9a48f
-    mapBrightness: 9,
-    diffuse: 2,
+    dark: 0,
+    baseColor: [0.45, 0.33, 0.28], // polished cocoa
+    glowColor: [0.24, 0.17, 0.14],
+    markerColor: [0.88, 0.74, 0.64],
+    patternColor: [0.66, 0.52, 0.45],
+    mapBrightness: NO_MAP,
+    diffuse: 1.3,
   },
+}
+
+/**
+ * Surface pattern, drawn as tiny cobe markers so it is painted on the ball and turns with it — that is what
+ * makes the spin read. Two wavy pearl strings that cross like intertwined lives (a nod to the beading on the
+ * dress), over faint dotted lines running pole to pole. Markers without an id get no label anchor.
+ */
+function pattern(color) {
+  const dots = []
+  for (let lng = -180; lng < 180; lng += 30) {
+    for (let lat = -75; lat <= 75; lat += 5) dots.push({ location: [lat, lng], size: 0.006, color })
+  }
+  for (let lng = -180; lng < 180; lng += 2.2) {
+    const wave = 22 * Math.sin(((lng * Math.PI) / 180) * 3)
+    dots.push({ location: [wave + 8, lng], size: 0.012, color })
+    dots.push({ location: [-wave - 8, lng], size: 0.012, color })
+  }
+  return dots
 }
 
 export function Globe({ stops, activeId, dark, onSelect }) {
   const canvas = useRef(null)
   const globe = useRef(null)
+  const fade = useRef(null) // not canvas.parentElement: cobe wraps the canvas in its own div
   // Phones spotlight the memory facing the viewer with its full title; the rest show as numbers.
   const [frontId, setFrontId] = useState(null)
   const [moving, setMoving] = useState(false)
@@ -86,6 +111,8 @@ export function Globe({ stops, activeId, dark, onSelect }) {
     let width = el.offsetWidth
     let dpr = Math.min(window.devicePixelRatio || 1, maxDpr, MAX_PIXELS / width)
     const theme = dark ? themes.dark : themes.light
+    // eslint-disable-next-line no-unused-vars
+    const { patternColor, ...cobeTheme } = theme
 
     const g = createGlobe(el, {
       devicePixelRatio: dpr,
@@ -93,17 +120,14 @@ export function Globe({ stops, activeId, dark, onSelect }) {
       height: width * dpr,
       phi: s.current.phi,
       theta: s.current.theta,
-      mapSamples: 20000,
-      arcColor: [...theme.markerColor],
-      arcWidth: 0.6,
-      arcHeight: 0.25,
+      mapSamples: 1000, // map is hidden; keep the dot lookup cheap
+      mapBaseBrightness: 0,
       markerElevation: 0.01,
-      ...theme,
+      ...cobeTheme,
       baseColor: [...theme.baseColor],
       glowColor: [...theme.glowColor],
       markerColor: [...theme.markerColor],
       markers: [],
-      arcs: stops.slice(1).map((stop, i) => ({ from: stops[i].coords, to: stop.coords, id: `arc-${stop.id}` })),
     })
     globe.current = g
 
@@ -169,7 +193,7 @@ export function Globe({ stops, activeId, dark, onSelect }) {
       dpr = Math.min(window.devicePixelRatio || 1, maxDpr, MAX_PIXELS / width)
     })
     ro.observe(el)
-    requestAnimationFrame(() => (el.style.opacity = '1'))
+    requestAnimationFrame(() => fade.current && (fade.current.style.opacity = '1'))
 
     return () => {
       cancelAnimationFrame(raf)
@@ -183,11 +207,14 @@ export function Globe({ stops, activeId, dark, onSelect }) {
   // Highlight the active memory and rotate to it.
   useEffect(() => {
     globe.current?.update({
-      markers: stops.map((st) => ({
-        location: st.coords,
-        size: st.id === activeId ? 0.09 : 0.05,
-        id: st.id,
-      })),
+      markers: [
+        ...pattern((dark ? themes.dark : themes.light).patternColor),
+        ...stops.map((st) => ({
+          location: st.coords,
+          size: st.id === activeId ? 0.09 : 0.05,
+          id: st.id,
+        })),
+      ],
     })
     const active = stops.find((st) => st.id === activeId)
     if (active) {
@@ -230,15 +257,22 @@ export function Globe({ stops, activeId, dark, onSelect }) {
 
   return (
     <div className="relative mx-auto aspect-square w-full max-w-[560px] lg:max-w-[min(560px,58svh)]">
-      <canvas
-        ref={canvas}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onPointerCancel={onPointerUp}
-        className="h-full w-full cursor-grab touch-pan-y opacity-0 transition-opacity duration-1000 active:cursor-grabbing"
-        aria-label="Interactive globe showing the places from the couple’s story"
-      />
+      {/* The ball fades in as one piece: CSS lighting (see .ball-* in index.css) wraps cobe's plain sphere.
+          The light is fixed top-left, so it stays put while the ball spins underneath. */}
+      <div ref={fade} className="absolute inset-0 opacity-0 transition-opacity duration-1000">
+        <div aria-hidden className="ball-ground" />
+        <canvas
+          ref={canvas}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerCancel={onPointerUp}
+          className="relative h-full w-full cursor-grab touch-pan-y active:cursor-grabbing"
+          aria-label="Interactive ball showing the couple’s most precious moments"
+        />
+        <div aria-hidden className="ball-shade" />
+        <div aria-hidden className="ball-shine" />
+      </div>
       {/* Clickable memory labels pinned to markers via CSS anchor positioning (progressive enhancement).
           Kept solid (no blur effects): they move every frame, and blur is costly to redraw on phones. */}
       {/* Phones: one memory at a time shows its full title, the rest are little hearts, so 8 long titles never
@@ -274,13 +308,7 @@ export function Globe({ stops, activeId, dark, onSelect }) {
               st.title
             ) : (
               <>
-                <Icon
-                  name="heart"
-                  width={11}
-                  height={11}
-                  fill="currentColor"
-                  className={`sm:hidden ${active ? '' : 'text-accent'}`}
-                />
+                <Icon name="heart" width={11} height={11} fill="currentColor" className={`sm:hidden ${active ? '' : 'text-accent'}`} />
                 <span className="hidden sm:inline">{st.title}</span>
               </>
             )}

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Icon } from './Icon'
+import { RsvpOrLive } from './RsvpOrLive'
 import { useApp } from '../hooks/useApp'
 import { locales } from '../config/i18n'
 import { wedding } from '../config/wedding'
@@ -25,7 +26,7 @@ function IconButton({ label, onClick, children, pressed }) {
 }
 
 export function Toolbar() {
-  const { t, theme, toggleTheme, musicOn, toggleMusic, setGalleryOpen, setGiftOpen, setRsvpOpen, cycleLocale, locale } = useApp()
+  const { t, theme, toggleTheme, musicOn, toggleMusic, setGalleryOpen, setGiftOpen, cycleLocale, locale } = useApp()
   const [scrolled, setScrolled] = useState(false)
   const [current, setCurrent] = useState('home')
 
@@ -103,22 +104,18 @@ export function Toolbar() {
                 {locales[locale].label}
               </button>
             )}
-            <button onClick={() => setRsvpOpen(true)} className="btn-solid ml-2 hidden px-5 py-2.5 sm:inline-flex">
-              {t.rsvp}
-            </button>
+            <RsvpOrLive className="ml-2 hidden px-5 py-2.5 sm:inline-flex" />
           </div>
         </div>
       </header>
 
-      {/* Mobile: a thumb-reachable RSVP button once the guest has scrolled past the hero. */}
+      {/* Mobile: a thumb-reachable RSVP / Watch Live button once the guest has scrolled past the hero. */}
       <div
         className={`fixed inset-x-0 bottom-0 z-40 flex justify-center px-4 pb-[max(1rem,env(safe-area-inset-bottom))] transition-all duration-500 sm:hidden ${
           scrolled ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-6 opacity-0'
         }`}
       >
-        <button onClick={() => setRsvpOpen(true)} className="btn-solid w-full max-w-sm py-4 shadow-lg">
-          {t.rsvp}
-        </button>
+        <RsvpOrLive className="w-full max-w-sm py-4 shadow-lg" />
       </div>
     </>
   )

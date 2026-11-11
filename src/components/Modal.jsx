@@ -1,4 +1,5 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Icon } from './Icon'
 import { useApp } from '../hooks/useApp'
 
@@ -6,6 +7,14 @@ import { useApp } from '../hooks/useApp'
 export function Modal({ open, onClose, label, children, variant = 'center' }) {
   const { t } = useApp()
   const panel = useRef(null)
+  // Keep the content mounted until the fade (500ms) and slide (700ms) have both finished, so closing doesn't flash an empty panel.
+  const [mounted, setMounted] = useState(open)
+  if (open && !mounted) setMounted(true)
+  useEffect(() => {
+    if (open) return
+    const id = setTimeout(() => setMounted(false), 750)
+    return () => clearTimeout(id)
+  }, [open])
 
   useEffect(() => {
     if (!open) return
@@ -21,7 +30,8 @@ export function Modal({ open, onClose, label, children, variant = 'center' }) {
     }
   }, [open, onClose])
 
-  return (
+  // Rendered into <body> so a transformed ancestor (e.g. a scroll-reveal section) can never trap the fixed overlay.
+  return createPortal(
     <div
       className={`fixed inset-0 z-50 transition-[opacity,visibility] duration-500 ${open ? 'visible opacity-100' : 'invisible opacity-0'}`}
       aria-hidden={!open}
@@ -48,8 +58,9 @@ export function Modal({ open, onClose, label, children, variant = 'center' }) {
         >
           <Icon name="close" />
         </button>
-        {open && children}
+        {(open || mounted) && children}
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }

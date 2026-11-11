@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useApp } from './hooks/useApp'
 import { useReveal } from './hooks/useReveal'
 import { Loader } from './components/Loader'
 import { Toolbar } from './components/Toolbar'
@@ -14,15 +15,22 @@ import { viewFromLocation } from './config/routes'
 /** Everything behind the PIN screen. Loaded as its own chunk so the PIN screen appears fast. */
 export default function Site({ locked }) {
   // Skip the loader when deep-linking straight to the gallery or RSVP (/photos, /rsvp — e.g. from a QR code).
-  const [loaded, setLoaded] = useState(() => viewFromLocation() !== null)
+  // Once the live stream is up the RSVP form is closed, so an old /rsvp link gets the normal intro instead.
+  const { live } = useApp()
+  const [loaded, setLoaded] = useState(() => {
+    const view = viewFromLocation()
+    return view !== null && !(view === 'rsvp' && live)
+  })
+  // The hero intro starts the moment Explore/Skip is clicked, playing while the loader slides away.
+  const [introStarted, setIntroStarted] = useState(loaded)
   useReveal(loaded)
 
   return (
     <div inert={locked}>
-      {!loaded && <Loader onDone={() => setLoaded(true)} />}
+      {!loaded && <Loader onExit={() => setIntroStarted(true)} onDone={() => setLoaded(true)} />}
       <Toolbar />
       <main>
-        <Hero play={loaded} />
+        <Hero play={introStarted} />
         <GlobeStory />
         <WeddingDetails />
       </main>

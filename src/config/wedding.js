@@ -21,8 +21,10 @@ export const wedding = {
   venue: {
     // Only the city is confirmed so far — add the venue name and street address when announced.
     name: 'Ibadan, Oyo State',
-    address: ['Venue details to follow'],
-    mapsUrl: 'https://maps.google.com/?q=Ibadan,+Oyo+State,+Nigeria',
+    address: [],
+    mapsUrl: 'https://www.google.com/maps/search/?api=1&query=SMA+House+of+Formation%2C+Bodija%2C+Ibadan',
+    /** 🔒 Directions are for selected guests only: the Directions button asks for this PIN first. '' = no PIN. */
+    directionsPin: '1234',
     website: '',
     note: 'Seating is thoughtfully curated to preserve the warmth and intimacy of the day. Full venue details and timings will be shared with invited guests.',
   },
@@ -38,7 +40,7 @@ export const wedding = {
   lockAfter: 60,
 
   /** Background music. Leave empty ('') to hide the sound toggle. */
-  music: '',
+  music: '/audio/nothing-can-keep-us-apart.m4a', // Moon Taxi – Nothing Can Keep Us Apart
 
   /** Optional intro video behind the hero. Leave empty for the animated gradient. */
   heroVideo: '',
@@ -47,7 +49,7 @@ export const wedding = {
    * 🌍 GLOBE STORY — cities are PLACEHOLDERS until you pick the real ones.
    * Each stop: id (unique, no spaces), title (the memory's name, shown on the globe), city, coords [lat, lng],
    * year, photos (paths under /public, e.g. '/images/story/lagos-1.jpg'), and optional story (an array of paragraphs).
-   * Short stories show right on the card; longer ones open with “Read our story”. Optional caption: a line under the title.
+   * Every story opens in a pop-up with “Read our story”. Optional caption: a line under the title.
    * Order matters: arcs are drawn from each stop to the next.
    * Get coordinates by right-clicking a spot in Google Maps.
    * An empty array hides the globe and keeps just the closing line.
@@ -60,6 +62,7 @@ export const wedding = {
       id: 'where-we-met',
       city: 'Lagos',
       title: 'Where We Met',
+      caption: 'We met in the most unexpected place and the most unimaginable thing happened.',
       coords: [6.5244, 3.3792],
       year: '2019',
       photos: [],
@@ -72,6 +75,7 @@ export const wedding = {
       id: 'how-we-met',
       city: 'Rio de Janeiro',
       title: 'How We Met',
+      caption: 'Business brought us together and we are still standing on the business… of love.',
       coords: [-22.9068, -43.1729],
       year: '2019',
       photos: [],
@@ -87,6 +91,7 @@ export const wedding = {
       id: 'first-date',
       city: 'Mexico City',
       title: 'Our First Date',
+      caption: 'We were on a roll and went on the highest number of dates ever in the shortest time!',
       coords: [19.4326, -99.1332],
       year: '2020',
       photos: [],
@@ -101,14 +106,20 @@ export const wedding = {
       id: 'said-yes',
       city: 'Honolulu',
       title: 'The Day I Said Yes',
+      caption: 'Adeola said yes to Tobi because she couldn’t say no!',
       coords: [21.3069, -157.8583],
       year: '2020',
       photos: [],
+      story: [
+        'Tobi had already asked, and after taking a moment to think about it, Adeola said yes to a relationship leading to marriage on the 12th of July, 2025.',
+        'Adeola loves surprises, and by this point, Tobi should be used to them, because Adeola delivered the response inside a cake box. Now, we cannot wait to say yes again at the altar.',
+      ],
     },
     {
       id: 'first-kiss',
       city: 'Tokyo',
       title: 'Our First Kiss',
+      caption: 'Sensational!',
       coords: [35.6762, 139.6503],
       year: '2021',
       photos: [],
@@ -121,39 +132,40 @@ export const wedding = {
       id: 'introduction',
       city: 'Bangkok',
       title: 'Family Introduction',
+      caption: 'The day the Adegbites and clan met the Sorunkes and their clan.',
       coords: [13.7563, 100.5018],
       year: '2025',
       photos: [],
+      story: [
+        'In September, our families officially met in an intimate and beautiful gathering that set the tone for everything to follow. If the traditional introduction was the beta test, it would be an indicator that the wedding will be amazing!',
+        'There was plenty of food, plenty of joy and a show of love, confirming that our families fit together seamlessly.',
+      ],
     },
     {
       id: 'best-memories',
       city: 'Dubai',
       title: 'Our Best Memories Together',
+      caption: 'We have had crazy fun being each other’s best friends in the past twenty-something months.',
       coords: [25.2048, 55.2708],
       year: '2026',
       photos: [],
+      story: [
+        'For the past twenty-something months, we have had crazy fun being each other’s best friends. We have travelled to a couple of states together, explored tourist sites and dined in several places.',
+        'We have bonded over food, over fun, over salsa, over arcade games, over silly AI short dramas, over Chelsea, over Africanism, over good music, over pop quiz events and a lot more. We have truly been each other’s muse.',
+        'Watch the video to see what we are talking about.',
+      ],
     },
   ],
 
   timeline: [
-    { time: '2:30 PM', title: 'Doors Open', icon: 'door' },
-    { time: '3:00 PM', title: 'Ceremony', icon: 'heart' },
-    { time: '4:00 PM', title: 'Cocktail Hour', icon: 'glass' },
-    { time: '5:00 PM', title: 'Reception Dinner', icon: 'dinner' },
-    { time: '9:00 PM', title: 'Send Off', icon: 'wave' },
-  ],
-
-  menu: [
-    { course: 'The Starter', description: 'Placeholder — describe the starter here.' },
-    { course: 'The Mains', description: 'Placeholder — describe the main courses here.' },
-    { course: 'The Sides', description: 'Placeholder — describe the sides here.' },
-    { course: 'The Sweets', description: 'Placeholder — describe the desserts and cake here.' },
+    { time: '12:00 PM', title: 'Traditional Wedding', icon: 'heart' },
+    { time: '1:00 PM', title: 'Reception', icon: 'dinner' },
+    { time: '4:00 PM', title: 'Send Off', icon: 'wave' },
   ],
 
   faq: [
-    { q: 'Where are the ceremony and reception?', a: 'Placeholder — both will be held at the venue above.' },
-    { q: 'Is there parking available?', a: 'Placeholder — add parking and transport details.' },
-    { q: 'What should I wear?', a: 'Placeholder — add the dress code or colours of the day.' },
+    { q: 'Is there parking available?', a: 'Yes, there is.' },
+    { q: 'What should I wear?', a: 'Wear anything comfortable. Please refer to the invite for the colours of the day.' },
     {
       q: 'Can I bring a plus-one?',
       a: 'Attendance is strictly by personal invitation, and seating is curated to keep the day warm and intimate — so we kindly ask that only the guests named on your invitation attend.',
@@ -162,10 +174,10 @@ export const wedding = {
       q: 'Can I share the invitation with others?',
       a: 'We’d be grateful if you didn’t — please allow us to inform others ourselves.',
     },
-    { q: 'Can I take photos?', a: 'Yes! Please share them in our gallery — tap the photo icon at the top of the page.' },
+    { q: 'Can I take photos?', a: 'Yes! Please share them in our gallery — tap the photo icon at the top of the page. However, kindly allow us share online first before you do.' },
     {
-      q: 'Do you have a registry?',
-      a: 'Your presence is the best gift! If you’d like to give something, tap “Gift the Couple” for our account details.',
+      q: 'Do you have a gift registry?',
+      a: 'Your presence is the best gift! If you’d like to give something, tap “Gift the Couple” to see our wishlist and account details.',
     },
   ],
 
@@ -194,5 +206,15 @@ export const wedding = {
   rsvp: {
     allowPlusOne: false, // attendance is strictly by personal invitation
     deadlineLabel: 'Kindly respond by November 1st, 2026',
+  },
+
+  /**
+   * 📺 Live stream for guests joining online. From `from` onwards (a day before the wedding), every RSVP button
+   * becomes “Watch Live” and opens `url`, and the RSVP form closes. It only switches once `url` is filled in.
+   * Preview it any time by adding ?live to the site address (e.g. adeoba.world/?live).
+   */
+  liveStream: {
+    url: '', // the YouTube live link
+    from: '2026-12-14T00:00:00+01:00', // Monday Dec 14, midnight Nigeria time
   },
 }

@@ -1,5 +1,7 @@
 import { useId, useState } from 'react'
 import { Icon } from './Icon'
+import { DirectionsButton } from './DirectionsGate'
+import { RsvpOrLive } from './RsvpOrLive'
 import { useApp } from '../hooks/useApp'
 import { useCountdown } from '../hooks/useCountdown'
 import { wedding } from '../config/wedding'
@@ -52,20 +54,6 @@ function Timeline() {
   )
 }
 
-function Menu() {
-  return (
-    <div className="mx-auto max-w-lg space-y-10 text-center">
-      {wedding.menu.map((m) => (
-        <div key={m.course}>
-          <p className="font-display text-2xl italic">{m.course}</p>
-          <span aria-hidden className="mx-auto my-3 block h-px w-8 bg-accent" />
-          <p className="leading-relaxed text-ink-soft dark:text-moon-soft">{m.description}</p>
-        </div>
-      ))}
-    </div>
-  )
-}
-
 function Faq() {
   const [open, setOpen] = useState(0)
   const base = useId()
@@ -108,11 +96,10 @@ function Faq() {
 }
 
 export function WeddingDetails() {
-  const { t, setRsvpOpen, setGalleryOpen, setGiftOpen } = useApp()
+  const { t, setGalleryOpen, setGiftOpen } = useApp()
   const [tab, setTab] = useState('timeline')
   const tabs = [
     ['timeline', t.timeline],
-    ['menu', t.menu],
     ['faq', t.faq],
   ]
 
@@ -143,18 +130,19 @@ export function WeddingDetails() {
               wedding.venue.name
             )}
           </p>
-          <address className="eyebrow mt-4 leading-loose not-italic text-ink-soft dark:text-moon-soft">
-            {wedding.venue.address.map((line) => (
-              <span key={line} className="block">
-                {line}
-              </span>
-            ))}
-          </address>
+          {wedding.venue.address.length > 0 && (
+            <address className="eyebrow mt-4 leading-loose not-italic text-ink-soft dark:text-moon-soft">
+              {wedding.venue.address.map((line) => (
+                <span key={line} className="block">
+                  {line}
+                </span>
+              ))}
+            </address>
+          )}
 
-          <div className="mt-10 flex flex-wrap justify-center gap-3">
-            <a className="btn" href={wedding.venue.mapsUrl} target="_blank" rel="noreferrer">
-              <Icon name="pin" width={14} height={14} /> {t.directions}
-            </a>
+          {/* Phones: an even stack of full-width buttons; wider screens: one centred row. */}
+          <div className="mx-auto mt-10 flex max-w-xs flex-col gap-3 sm:max-w-none sm:flex-row sm:flex-wrap sm:justify-center">
+            <DirectionsButton />
             <button className="btn" onClick={() => setGalleryOpen(true)}>
               <Icon name="gallery" width={14} height={14} /> {t.sharePhotos}
             </button>
@@ -163,9 +151,7 @@ export function WeddingDetails() {
                 <Icon name="gift" width={14} height={14} /> {t.giftCouple}
               </button>
             )}
-            <button className="btn-solid" onClick={() => setRsvpOpen(true)}>
-              {t.rsvp}
-            </button>
+            <RsvpOrLive />
           </div>
           <p className="mx-auto mt-8 max-w-md text-sm leading-relaxed text-ink-soft dark:text-moon-soft">{wedding.venue.note}</p>
         </div>
@@ -194,7 +180,6 @@ export function WeddingDetails() {
           </div>
           <div role="tabpanel" id={`panel-${tab}`} aria-labelledby={`tab-${tab}`} className="text-left">
             {tab === 'timeline' && <Timeline />}
-            {tab === 'menu' && <Menu />}
             {tab === 'faq' && <Faq />}
           </div>
         </div>

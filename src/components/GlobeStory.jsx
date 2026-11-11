@@ -10,13 +10,15 @@ import { wedding } from '../config/wedding'
 const stops = wedding.story
 
 /** Short stories (a couple of lines) read best right on the card; longer ones open in a pop-up. */
-const isLong = (stop) => (stop?.story ?? []).join(' ').length > 280
+// Every story opens in the pop-up via “Read our story”, however short, so all memories behave the same.
+const isLong = (stop) => (stop?.story ?? []).length > 0
 
 export function GlobeStory() {
   const { t, theme } = useApp()
   const [activeId, setActiveId] = useState(null)
   const [reading, setReading] = useState(false)
   const card = useRef(null)
+  const chips = useRef(null)
 
   const index = stops.findIndex((s) => s.id === activeId)
   const active = index >= 0 ? stops[index] : null
@@ -33,6 +35,14 @@ export function GlobeStory() {
     scrollToCard.current = true
     setActiveId(id)
   }
+
+  // Keep the selected memory's button in view in the swipeable row (horizontal only: never scrolls the page).
+  useEffect(() => {
+    const row = chips.current
+    const chip = row?.querySelector(`[data-id="${activeId}"]`)
+    if (!row || !chip || row.scrollWidth <= row.clientWidth) return
+    row.scrollTo({ left: chip.offsetLeft - (row.clientWidth - chip.offsetWidth) / 2, behavior: 'smooth' })
+  }, [activeId])
 
   useEffect(() => {
     if (!card.current) return
@@ -83,10 +93,12 @@ export function GlobeStory() {
 
             <div className="min-h-[420px] min-w-0">
               {/* City picker — always visible so keyboard and screen-reader users can navigate the story. */}
+              {/* Phones: one swipeable row (seven stacked rows pushed the story far down); desktop wraps. */}
               <div
+                ref={chips}
                 role="tablist"
                 aria-label="Our memories"
-                className="mb-8 flex flex-wrap gap-2 lg:mb-5"
+                className="relative -mx-6 mb-8 flex snap-x gap-2 overflow-x-auto px-6 pb-1 [scrollbar-width:none] [mask-image:linear-gradient(to_right,transparent,black_1.5rem,black_calc(100%-2.5rem),transparent)] lg:mx-0 lg:mb-5 lg:flex-wrap lg:overflow-visible lg:px-0 lg:[mask-image:none] [&::-webkit-scrollbar]:hidden"
               >
                 {stops.map((s) => (
                   <button
@@ -95,20 +107,14 @@ export function GlobeStory() {
                     data-id={s.id}
                     aria-selected={s.id === activeId}
                     onClick={() => setActiveId(s.id)}
-                    className={`eyebrow rounded-full border px-4 py-2 text-[0.62rem] transition-colors ${
+                    className={`eyebrow shrink-0 snap-start scroll-ml-6 rounded-full border px-4 py-2 text-[0.62rem] whitespace-nowrap transition-colors ${
                       s.id === activeId
                         ? 'border-accent bg-accent text-paper dark:text-night'
                         : 'border-line hover:border-accent hover:text-accent dark:border-line-dark'
                     }`}
                   >
                     <span className="inline-flex items-center gap-2">
-                      <Icon
-                        name="heart"
-                        width={11}
-                        height={11}
-                        fill="currentColor"
-                        className={s.id === activeId ? '' : 'text-accent'}
-                      />
+                      <Icon name="heart" width={11} height={11} fill="currentColor" className={s.id === activeId ? '' : 'text-accent'} />
                       {s.title}
                     </span>
                   </button>
@@ -125,16 +131,7 @@ export function GlobeStory() {
                     ))}
                   </div>
                   <h3 className="mt-8 font-display text-3xl lg:mt-5">{active.title}</h3>
-                  {active.caption && (
-                    <p className="mt-3 max-w-md leading-relaxed text-ink-soft dark:text-moon-soft">{active.caption}</p>
-                  )}
-                  {active.story?.length > 0 && !isLong(active) && (
-                    <div className="mt-3 max-w-md space-y-3 leading-relaxed text-ink-soft dark:text-moon-soft">
-                      {active.story.map((para, i) => (
-                        <p key={i}>{para}</p>
-                      ))}
-                    </div>
-                  )}
+                  {active.caption && <p className="mt-3 max-w-md leading-relaxed text-ink-soft dark:text-moon-soft">{active.caption}</p>}
                   {isLong(active) && (
                     <button
                       onClick={() => setReading(true)}
@@ -167,7 +164,7 @@ export function GlobeStory() {
                   </div>
                 </div>
               ) : (
-                <div className="flex h-72 flex-col items-start justify-center border-l border-line pl-8 dark:border-line-dark">
+                <div className="flex h-56 flex-col items-start justify-center border-l lg:h-72 border-line pl-8 dark:border-line-dark">
                   <p className="font-display text-3xl italic">{t.globeSelect}</p>
                   <p className="mt-3 text-sm text-ink-soft dark:text-moon-soft">{t.globeHint}</p>
                 </div>

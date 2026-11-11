@@ -8,7 +8,7 @@ import { wedding } from '../config/wedding'
  * just flashes), then shows an Enter button — that click is the user gesture
  * browsers require before background music can play.
  */
-export function Loader({ onDone }) {
+export function Loader({ onExit, onDone }) {
   const { t, startMusic } = useApp()
   const [ready, setReady] = useState(false)
   const root = useRef(null)
@@ -44,6 +44,7 @@ export function Loader({ onDone }) {
 
   const exit = (withMusic) => {
     if (withMusic) startMusic()
+    onExit?.()
     gsap.to(root.current, {
       yPercent: -100,
       duration: 1.1,
