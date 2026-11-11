@@ -9,6 +9,9 @@ import { wedding } from '../config/wedding'
 
 const stops = wedding.story
 
+/** Short stories (a couple of lines) read best right on the card; longer ones open in a pop-up. */
+const isLong = (stop) => (stop?.story ?? []).join(' ').length > 280
+
 export function GlobeStory() {
   const { t, theme } = useApp()
   const [activeId, setActiveId] = useState(null)
@@ -122,8 +125,17 @@ export function GlobeStory() {
                     ))}
                   </div>
                   <h3 className="mt-8 font-display text-3xl lg:mt-5">{active.title}</h3>
-                  <p className="mt-3 max-w-md leading-relaxed text-ink-soft dark:text-moon-soft">{active.caption}</p>
-                  {active.story?.length > 0 && (
+                  {active.caption && (
+                    <p className="mt-3 max-w-md leading-relaxed text-ink-soft dark:text-moon-soft">{active.caption}</p>
+                  )}
+                  {active.story?.length > 0 && !isLong(active) && (
+                    <div className="mt-3 max-w-md space-y-3 leading-relaxed text-ink-soft dark:text-moon-soft">
+                      {active.story.map((para, i) => (
+                        <p key={i}>{para}</p>
+                      ))}
+                    </div>
+                  )}
+                  {isLong(active) && (
                     <button
                       onClick={() => setReading(true)}
                       className="eyebrow mt-4 inline-flex items-center gap-1.5 text-[0.62rem] text-accent underline-offset-4 hover:underline"
@@ -167,7 +179,7 @@ export function GlobeStory() {
         <div className="mt-32 lg:mt-20">{closing}</div>
       </div>
 
-      <Modal open={reading && !!active?.story} onClose={() => setReading(false)} label={active?.title}>
+      <Modal open={reading && isLong(active)} onClose={() => setReading(false)} label={active?.title}>
         {active?.story && (
           <article className="px-7 pt-12 pb-10 sm:px-10">
             <p className="eyebrow text-accent">
@@ -183,7 +195,7 @@ export function GlobeStory() {
               <button
                 onClick={() => {
                   go(1)
-                  if (!stops[index + 1].story?.length) setReading(false)
+                  if (!isLong(stops[index + 1])) setReading(false)
                 }}
                 className="eyebrow mt-8 inline-flex items-center gap-1.5 text-[0.62rem] text-accent underline-offset-4 hover:underline"
               >

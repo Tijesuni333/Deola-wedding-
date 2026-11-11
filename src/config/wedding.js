@@ -46,8 +46,8 @@ export const wedding = {
   /**
    * 🌍 GLOBE STORY — cities are PLACEHOLDERS until you pick the real ones.
    * Each stop: id (unique, no spaces), title (the memory's name, shown on the globe), city, coords [lat, lng],
-   * year, caption (a one-line teaser shown on the card), photos (paths under /public, e.g. '/images/story/lagos-1.jpg'),
-   * and optional story (an array of paragraphs, opened with “Read our story”).
+   * year, photos (paths under /public, e.g. '/images/story/lagos-1.jpg'), and optional story (an array of paragraphs).
+   * Short stories show right on the card; longer ones open with “Read our story”. Optional caption: a line under the title.
    * Order matters: arcs are drawn from each stop to the next.
    * Get coordinates by right-clicking a spot in Google Maps.
    * An empty array hides the globe and keeps just the closing line.
@@ -62,7 +62,6 @@ export const wedding = {
       title: 'Where We Met',
       coords: [6.5244, 3.3792],
       year: '2019',
-      caption: 'Crossover night, the last service of 2023 — a ride home, a broken car compartment, and a driver whose face she never saw.',
       photos: [],
       story: [
         'Our story began at church during the crossover service on the last night of 2023. Adeola attended with her mum and brothers, and after service, Tobi offered to drop them off at the junction of Adeola’s house.',
@@ -75,7 +74,6 @@ export const wedding = {
       title: 'How We Met',
       coords: [-22.9068, -43.1729],
       year: '2019',
-      caption: 'A mysterious “Bro Tobi”, a DM about a client, and a grant-writing seminar that finally connected the dots.',
       photos: [],
       story: [
         'The next Sunday, Adeola asked the person organising transportation for church members who the driver was and was told it was a “Bro Tobi.” Adeola went to look for him to apologise again and tried to get the compartment fixed but Tobi told her not to worry about it, and that was all. No more contacts were exchanged.',
@@ -87,47 +85,44 @@ export const wedding = {
     },
     {
       id: 'first-date',
-      city: 'New York',
+      city: 'Mexico City',
       title: 'Our First Date',
-      coords: [40.7128, -74.006],
+      coords: [19.4326, -99.1332],
       year: '2020',
-      caption: 'Placeholder — where we went, what we ate, and how nervous we were.',
       photos: [],
+      story: [
+        'Our first date wasn’t the conventional one… We went to shoot arrows! You heard that right.',
+        'A week after colliding again on Instagram, Tobi gave Adeola two options for a first date: Salsa on a Sunday evening or Archery on a Friday evening. She chose Archery, and Salsa too, and we ended up going on three dates in five days. Yes, we were on a roll!',
+        'On that very first date, after shooting arrows for about 30 minutes, we were supposed to go get food but we got so lost in conversations for almost 3 hours that we completely forgot to eat.',
+        'Oh, what hearty conversations we had!',
+      ],
     },
     {
       id: 'said-yes',
-      city: 'Los Angeles',
+      city: 'Honolulu',
       title: 'The Day I Said Yes',
-      coords: [34.0522, -118.2437],
+      coords: [21.3069, -157.8583],
       year: '2020',
-      caption: 'Placeholder — the day we made it official.',
       photos: [],
     },
     {
       id: 'first-kiss',
-      city: 'Honolulu',
-      title: 'Our First Kiss',
-      coords: [21.3069, -157.8583],
-      year: '2021',
-      caption: 'Placeholder — the moment we’ll never forget.',
-      photos: [],
-    },
-    {
-      id: 'proposal',
       city: 'Tokyo',
-      title: 'The Proposal',
+      title: 'Our First Kiss',
       coords: [35.6762, 139.6503],
-      year: '2025',
-      caption: 'Placeholder — the question, the ring, and the yes.',
+      year: '2021',
       photos: [],
+      story: [
+        'Now here is a reason why you might want front-row seats at our wedding…',
+        'For the first time, you will see us kiss. 😌😉',
+      ],
     },
     {
       id: 'introduction',
       city: 'Bangkok',
-      title: 'Introduction',
+      title: 'Family Introduction',
       coords: [13.7563, 100.5018],
       year: '2025',
-      caption: 'Placeholder — our families came together to celebrate us.',
       photos: [],
     },
     {
@@ -136,7 +131,6 @@ export const wedding = {
       title: 'Our Best Memories Together',
       coords: [25.2048, 55.2708],
       year: '2026',
-      caption: 'Placeholder — the trips, the laughs, and everything in between.',
       photos: [],
     },
   ],
