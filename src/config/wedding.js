@@ -31,13 +31,13 @@ export const wedding = {
 
   /**
    * 🔒 Guests must enter this PIN before seeing the site (digits only, any length).
-   * It's asked again on every page load, whenever the guest leaves the tab, and after
+   * It’s asked again on every page load and whenever the guest leaves the tab. Optionally also after
    * `lockAfter` seconds without any tap, scroll or keypress (0 = never lock for inactivity).
    * The photo gallery is exempt, so guests can take/upload photos without being locked out.
    * Leave `pin` empty ('') to turn the PIN screen off.
    */
   pin: '0000',
-  lockAfter: 60,
+  lockAfter: 0,
 
   /** Background music. Leave empty ('') to hide the sound toggle. */
   music: '/audio/nothing-can-keep-us-apart.m4a', // Moon Taxi – Nothing Can Keep Us Apart
