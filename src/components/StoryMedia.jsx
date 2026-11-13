@@ -28,8 +28,8 @@ export function StoryMedia({ stop, index }) {
 function StoryVideo({ src, poster, label }) {
   const video = useRef(null)
   const [sound, setSound] = useState(false)
-  // The cover picture sits underneath and shows straight away; the video fades in over it only once it's really
-  // playing, so the card is never blank while a phone is still fetching the first frames.
+  // The cover picture shows straight away and fades out once the video is really playing, so the card is never blank
+  // while a phone is still fetching the first frames.
   const [playing, setPlaying] = useState(false)
   // Load the cover first, then the video, so on a slow connection the two don't compete and the picture comes up fast.
   const [coverDone, setCoverDone] = useState(!poster)
@@ -80,15 +80,7 @@ function StoryVideo({ src, poster, label }) {
 
   return (
     <>
-      {poster && (
-        <img
-          src={poster}
-          alt=""
-          onLoad={() => setCoverDone(true)}
-          onError={() => setCoverDone(true)}
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-      )}
+      {/* The video itself stays fully visible: iPhones won't autoplay a video they consider hidden (e.g. opacity 0). */}
       <video
         ref={video}
         src={coverDone ? src : undefined}
@@ -99,8 +91,18 @@ function StoryVideo({ src, poster, label }) {
         preload="auto"
         aria-label={label}
         onPlaying={() => setPlaying(true)}
-        className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${playing ? 'opacity-100' : 'opacity-0'}`}
+        className="absolute inset-0 h-full w-full object-cover"
       />
+      {/* The cover sits on top so the card is never blank while the first frames load, then fades away. */}
+      {poster && (
+        <img
+          src={poster}
+          alt=""
+          onLoad={() => setCoverDone(true)}
+          onError={() => setCoverDone(true)}
+          className={`pointer-events-none absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${playing ? 'opacity-0' : 'opacity-100'}`}
+        />
+      )}
       <div
         aria-hidden
         className={`pointer-events-none absolute inset-0 bg-[#573831] transition-opacity duration-700 ${sound ? 'opacity-20' : 'opacity-55'}`}
