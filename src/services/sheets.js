@@ -19,6 +19,8 @@ export async function submitRsvpToSheet(input) {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
     body: JSON.stringify(input),
+    // Don't leave the guest on “Sending…” forever on a dead connection; they can simply try again.
+    signal: AbortSignal.timeout(30_000),
   })
   if (!res.ok) throw new Error(`RSVP failed (${res.status})`)
   const data = await res.json().catch(() => ({ ok: false }))

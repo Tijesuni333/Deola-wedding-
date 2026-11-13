@@ -83,6 +83,10 @@ export const drivePhotos = {
 
   async uploadPhoto(file) {
     const owner = ownerId()
+    // One id per photo, sent with both attempts below. If the full-size attempt times out here but still
+    // reaches Drive, the script sees the same id on the smaller retry and returns the saved photo instead
+    // of storing it twice (see uploadPhoto in Photos.gs).
+    const uploadId = crypto.randomUUID()
     let data
 
     if (!slowNetwork && !connectionLooksSlow()) {
@@ -93,7 +97,7 @@ export const drivePhotos = {
         // Deadline = how long it should take at MIN_MBPS. Slower than that → give up and send the small copy.
         const budgetS = SERVER_OVERHEAD_S + (bytes * 8) / (MIN_MBPS * 1e6)
         const started = performance.now()
-        data = await call({ action: 'upload', owner, image }, (budgetS + 6) * 1000)
+        data = await call({ action: 'upload', owner, uploadId, image }, (budgetS + 6) * 1000)
         if ((performance.now() - started) / 1000 > budgetS) slowNetwork = true // made it, but only just
       } catch (err) {
         if (err.name === 'TimeoutError' || err.name === 'AbortError' || err instanceof TypeError) slowNetwork = true
@@ -102,7 +106,7 @@ export const drivePhotos = {
 
     if (!data) {
       const small = await compressImage(file, SMALL_SIDE, SMALL_QUALITY)
-      data = await call({ action: 'upload', owner, image: dataUrlToBase64(small) })
+      data = await call({ action: 'upload', owner, uploadId, image: dataUrlToBase64(small) })
     }
     return { ...toPhoto(data.photo, data.photo.owner), mine: true }
   },

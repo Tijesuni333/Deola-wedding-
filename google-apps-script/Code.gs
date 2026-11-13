@@ -9,7 +9,7 @@ const HEADERS = ['Submitted', 'Name', 'Email', 'Attending', 'Dietary Restriction
 
 function doPost(e) {
   const lock = LockService.getScriptLock()
-  lock.tryLock(10000)
+  lock.waitLock(20000) // one RSVP at a time, so rows never interleave
   try {
     const data = JSON.parse(e.postData.contents)
 
@@ -23,14 +23,19 @@ function doPost(e) {
     }
 
     const sheet = getSheet()
-    sheet.appendRow([
-      new Date(),
-      name,
-      email,
-      data.attending ? 'Yes' : 'No',
-      clean(data.dietary, 300),
-      clean(data.message, 1000),
-    ])
+    const row = [new Date(), name, email, data.attending ? 'Yes' : 'No', clean(data.dietary, 300), clean(data.message, 1000)]
+
+    // A guest whose connection dropped may press Submit again. The site sends the same id for every try of
+    // one form, so a repeat updates the row it already wrote instead of adding a duplicate.
+    const cache = CacheService.getScriptCache()
+    const key = data.id ? 'rsvp:' + String(data.id).slice(0, 64) : ''
+    const existing = key ? Number(cache.get(key)) : 0
+    if (existing > 1 && existing <= sheet.getLastRow()) {
+      sheet.getRange(existing, 1, 1, row.length).setValues([row])
+    } else {
+      sheet.appendRow(row)
+      if (key) cache.put(key, String(sheet.getLastRow()), 21600) // remembered for 6 hours
+    }
     return json({ ok: true })
   } catch (err) {
     return json({ ok: false, error: String(err) })

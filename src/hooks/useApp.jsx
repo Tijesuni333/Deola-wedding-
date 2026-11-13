@@ -50,6 +50,9 @@ export function AppProvider({ children }) {
     return () => clearInterval(id)
   }, [live])
   const resumeAfter = useRef(false) // music was playing when the guest left; resume on return
+  // Whether the guest wants music on (they tapped Explore and haven't switched it off). Tracked separately from
+  // the player's own state because phones pause page audio by themselves, e.g. when a video plays with sound.
+  const wanted = useRef(false)
 
   useEffect(() => {
     // Tidy legacy ?view= links into the clean path.
@@ -100,7 +103,16 @@ export function AppProvider({ children }) {
     el.loop = true
     el.volume = MUSIC_VOLUME
     audio.current = el
-    return () => el.pause()
+    // Keep the sound icon honest whoever paused or played it (us, the phone, headphone buttons…).
+    const on = () => setMusicOn(true)
+    const off = () => setMusicOn(false)
+    el.addEventListener('play', on)
+    el.addEventListener('pause', off)
+    return () => {
+      el.removeEventListener('play', on)
+      el.removeEventListener('pause', off)
+      el.pause()
+    }
   }, [])
 
   // Smooth volume changes. (iPhones ignore volume set by web pages, so there the fades/ducking are skipped.)
@@ -124,11 +136,14 @@ export function AppProvider({ children }) {
     const el = audio.current
     if (!el) return
     if (el.paused) {
+      wanted.current = true
+      resumeAfter.current = false
       el.volume = level.current
       el.play()
         .then(() => setMusicOn(true))
         .catch(() => setMusicOn(false))
     } else {
+      wanted.current = false
       resumeAfter.current = false
       el.pause()
       setMusicOn(false)
@@ -140,6 +155,7 @@ export function AppProvider({ children }) {
   const startMusic = useCallback(() => {
     const el = audio.current
     if (!el || !el.paused) return
+    wanted.current = true
     el.volume = 0
     el.play()
       .then(() => {
@@ -151,21 +167,19 @@ export function AppProvider({ children }) {
       })
   }, [fadeTo])
 
-  // Pause when the guest leaves (tab hidden / PIN screen back up) and pick up where it left off on return —
-  // but only if it was playing; a guest who switched the music off keeps it off.
+  // Pause when the guest leaves (tab hidden / PIN screen back up) or a video plays with sound, and pick up where
+  // it left off afterwards — unless the guest switched the music off themselves. This deliberately doesn't check
+  // whether it's playing right now: phones may already have paused it on their own when the video started.
   const suspendMusic = useCallback(() => {
-    if (!audio.current || audio.current.paused) return
+    if (!audio.current || !wanted.current) return
     resumeAfter.current = true
     audio.current.pause()
-    setMusicOn(false)
   }, [])
   const resumeMusic = useCallback(() => {
     if (!audio.current || !resumeAfter.current) return
     resumeAfter.current = false
-    audio.current
-      .play()
-      .then(() => setMusicOn(true))
-      .catch(() => {})
+    if (!wanted.current || !audio.current.paused) return
+    audio.current.play().catch(() => {})
   }, [])
 
   // Photo gallery open → music keeps playing, just softer.
@@ -184,7 +198,8 @@ export function AppProvider({ children }) {
       if (anyAudible()) suspendMusic()
       else if (document.visibilityState === 'visible' && !document.getElementById('pin-title')) resumeMusic()
     }
-    // 'storymedia': a memory's video was removed from the page (switching memories).
+    // 'storymedia': sent by a memory's video when its sound button is tapped (so the music restarts inside the
+    // tap itself, which phones are happier with) and when it's removed from the page (switching memories).
     const events = ['play', 'playing', 'pause', 'ended', 'volumechange', 'emptied', 'storymedia']
     events.forEach((ev) => document.addEventListener(ev, onChange, true))
     return () => events.forEach((ev) => document.removeEventListener(ev, onChange, true))

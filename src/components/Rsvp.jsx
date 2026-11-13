@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { Modal } from './Modal'
 import { Icon } from './Icon'
 import { useApp } from '../hooks/useApp'
@@ -10,6 +10,9 @@ function RsvpForm({ onClose }) {
   const [attending, setAttending] = useState(null)
   const [errors, setErrors] = useState({})
   const [status, setStatus] = useState('idle')
+  // If a send fails on a bad connection but actually reached the sheet, pressing Submit again updates
+  // that same row (matched by this id) rather than adding a duplicate. See Code.gs.
+  const submissionId = useRef(crypto.randomUUID())
 
   const submit = async (e) => {
     e.preventDefault()
@@ -26,6 +29,7 @@ function RsvpForm({ onClose }) {
     setStatus('sending')
     try {
       await backend.submitRsvp({
+        id: submissionId.current,
         name: get('name'),
         email: get('email'),
         attending: attending,

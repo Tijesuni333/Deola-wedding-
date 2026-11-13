@@ -13,6 +13,7 @@ import { drivePhotos, photosConfigured } from './photos'
  * @property {string} [guestName]
  * @property {string} [dietary]
  * @property {string} [message]
+ * @property {string} [id]   Same for every retry of one form, so a retry updates the row instead of adding another
  *
  * @typedef {Object} Photo
  * @property {string} id

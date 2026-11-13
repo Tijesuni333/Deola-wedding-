@@ -64,6 +64,8 @@ function StoryVideo({ src, poster, label }) {
       if (el.ended) el.currentTime = 0
       el.play().catch(() => {})
     }
+    // Tell the music right away, while still inside the tap: phones only reliably let audio start from a tap.
+    document.dispatchEvent(new Event('storymedia'))
   }
 
   return (

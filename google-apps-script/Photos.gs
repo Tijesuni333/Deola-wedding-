@@ -48,15 +48,55 @@ function uploadPhoto(data) {
     return { ok: false, error: 'Not a JPEG' }
   }
 
-  const ownerHash = sha256(owner)
-  const stamp = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd HH.mm.ss')
-  const blob = Utilities.newBlob(bytes, 'image/jpeg', 'Guest photo ' + stamp + '.jpg')
-  const file = getPhotoFolder().createFile(blob)
-  file.setDescription('owner:' + ownerHash)
-  file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW)
-  CacheService.getScriptCache().remove(LIST_CACHE_KEY)
+  // The site sends a photo full-size first and, if that seems too slow, again as a smaller copy — both with
+  // the same uploadId. If the first one still arrived, return it instead of saving the photo twice.
+  const key = data.uploadId ? 'upload:' + String(data.uploadId).slice(0, 64) : ''
+  if (key) {
+    const saved = claimUpload(key)
+    if (saved) return { ok: true, photo: saved }
+  }
 
-  return { ok: true, photo: { id: file.getId(), createdAt: file.getDateCreated().getTime(), owner: ownerHash } }
+  try {
+    const ownerHash = sha256(owner)
+    const stamp = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd HH.mm.ss')
+    const blob = Utilities.newBlob(bytes, 'image/jpeg', 'Guest photo ' + stamp + '.jpg')
+    const file = getPhotoFolder().createFile(blob)
+    file.setDescription('owner:' + ownerHash)
+    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW)
+    CacheService.getScriptCache().remove(LIST_CACHE_KEY)
+
+    const photo = { id: file.getId(), createdAt: file.getDateCreated().getTime(), owner: ownerHash }
+    if (key) CacheService.getScriptCache().put(key, JSON.stringify(photo), 21600) // remembered for 6 hours
+    return { ok: true, photo: photo }
+  } catch (err) {
+    if (key) CacheService.getScriptCache().remove(key) // let a retry save it
+    throw err
+  }
+}
+
+/**
+ * Returns the photo already saved under this uploadId, or null after marking it as in progress (go ahead
+ * and save). If the other attempt is still saving, waits up to ~25s for it to finish.
+ */
+function claimUpload(key) {
+  const cache = CacheService.getScriptCache()
+  for (let i = 0; i < 25; i++) {
+    const lock = LockService.getScriptLock()
+    lock.waitLock(10000)
+    let state
+    try {
+      state = cache.get(key)
+      if (!state) {
+        cache.put(key, 'pending', 300)
+        return null
+      }
+    } finally {
+      lock.releaseLock()
+    }
+    if (state !== 'pending') return JSON.parse(state)
+    Utilities.sleep(1000)
+  }
+  return null // the first attempt never finished; save this one
 }
 
 function deletePhoto(data) {

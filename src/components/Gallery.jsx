@@ -91,11 +91,18 @@ function GalleryBody() {
   const [error, setError] = useState(null)
   const uploadInput = useRef(null)
   const cameraInput = useRef(null)
+  // Photos this guest uploaded during this visit. A gallery list that was already on its way when an upload
+  // finished may not include it yet; these are kept on top so a fresh upload never vanishes or shows twice.
+  const uploaded = useRef(new Map())
 
   const load = useCallback(() => {
     backend
       .listPhotos()
-      .then(setPhotos)
+      .then((list) => {
+        const ids = new Set(list.map((p) => p.id))
+        const extra = [...uploaded.current.values()].filter((p) => !ids.has(p.id))
+        setPhotos([...extra, ...list])
+      })
       .catch(() => {
         setPhotos((p) => p ?? [])
         setError('load')
@@ -112,7 +119,8 @@ function GalleryBody() {
     for (const file of files) {
       try {
         const photo = await backend.uploadPhoto(file)
-        setPhotos((p) => [photo, ...(p ?? [])])
+        uploaded.current.set(photo.id, photo)
+        setPhotos((p) => (p?.some((x) => x.id === photo.id) ? p : [photo, ...(p ?? [])]))
       } catch {
         setError('upload')
       } finally {
@@ -129,6 +137,7 @@ function GalleryBody() {
       setError('delete')
       return
     }
+    uploaded.current.delete(id)
     setPhotos((p) => {
       const next = (p ?? []).filter((x) => x.id !== id)
       setViewing((v) => (v === null || next.length === 0 ? null : Math.min(v, next.length - 1)))
