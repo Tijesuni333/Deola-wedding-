@@ -24,7 +24,7 @@ export const wedding = {
     address: [],
     mapsUrl: 'https://www.google.com/maps/search/?api=1&query=SMA+House+of+Formation%2C+Bodija%2C+Ibadan',
     /** 🔒 Directions are for selected guests only: the Directions button asks for this PIN first. '' = no PIN. */
-    directionsPin: '1234',
+    directionsPin: '7953',
     website: '',
     note: '', // optional line under the buttons; '' = hidden
   },
@@ -36,11 +36,11 @@ export const wedding = {
    * The photo gallery is exempt, so guests can take/upload photos without being locked out.
    * Leave `pin` empty ('') to turn the PIN screen off.
    */
-  pin: '0000',
+  pin: '5820',
   lockAfter: 0,
 
   /** Background music. Leave empty ('') to hide the sound toggle. */
-  music: '/audio/nothing-can-keep-us-apart.m4a', // Moon Taxi – Nothing Can Keep Us Apart
+  music: '/audio/nothing-can-keep-us-apart-2.m4a', // Moon Taxi – Nothing Can Keep Us Apart
 
   /** Optional intro video behind the hero. Leave empty for the animated gradient. */
   heroVideo: '',
@@ -48,7 +48,8 @@ export const wedding = {
   /**
    * 🌍 GLOBE STORY — cities are PLACEHOLDERS until you pick the real ones.
    * Each stop: id (unique, no spaces), title (the memory's name, shown on the globe), city, coords [lat, lng],
-   * year, photos (paths under /public, e.g. '/images/story/lagos-1.jpg'), and optional story (an array of paragraphs).
+   * year, photos (paths under /public, e.g. '/images/story/lagos-1.jpg'; the first one is shown), and optional story (an array of paragraphs).
+   * Or a video instead of a photo: video ('/video/….mp4') plus poster (an image shown while it loads).
    * Every story opens in a pop-up with “Read our story”. Optional caption: a line under the title.
    * Order matters: arcs are drawn from each stop to the next.
    * Get coordinates by right-clicking a spot in Google Maps.
@@ -65,7 +66,7 @@ export const wedding = {
       caption: 'We met in the most unexpected place and the most unimaginable thing happened.',
       coords: [6.5244, 3.3792],
       year: '2019',
-      photos: [],
+      photos: ['/images/story/where-we-met.jpg'],
       story: [
         'Our story began at church during the crossover service on the last night of 2023. Adeola attended with her mum and brothers, and after service, Tobi offered to drop them off at the junction of Adeola’s house.',
         'In a memorable twist, Adeola’s brother hit a compartment in the front seat of Tobi’s car and broke it, which meant Adeola had the obligation to get it fixed. Because it was dark and hectic that night, Adeola didn’t even see his face and couldn’t tell who exactly carried them or what his name was.',
@@ -78,7 +79,7 @@ export const wedding = {
       caption: 'Business brought us together and we are still standing on the business… of love.',
       coords: [-22.9068, -43.1729],
       year: '2019',
-      photos: [],
+      photos: ['/images/story/how-we-met.jpg'],
       story: [
         'The next Sunday, Adeola asked the person organising transportation for church members who the driver was and was told it was a “Bro Tobi.” Adeola went to look for him to apologise again and tried to get the compartment fixed but Tobi told her not to worry about it, and that was all. No more contacts were exchanged.',
         'Then came May 30, 2024, when Tobi slid into Adeola’s DMs to tell her he had tried reaching one of her clients online to patronise them. He has since confessed that he was already attracted to her and was just looking for a way to talk to her. Not realising he was the same “Bro Tobi” from the crossover service, Adeola kept things friendly purely for church’s sake.',
@@ -94,7 +95,7 @@ export const wedding = {
       caption: 'We were on a roll and went on the highest number of dates ever in the shortest time!',
       coords: [19.4326, -99.1332],
       year: '2020',
-      photos: [],
+      photos: ['/images/story/first-date.jpg'],
       story: [
         'Our first date wasn’t the conventional one… We went to shoot arrows! You heard that right.',
         'A week after colliding again on Instagram, Tobi gave Adeola two options for a first date: Salsa on a Sunday evening or Archery on a Friday evening. She chose Archery, and Salsa too, and we ended up going on three dates in five days. Yes, we were on a roll!',
@@ -109,7 +110,7 @@ export const wedding = {
       caption: 'Adeola said yes to Tobi because she couldn’t say no!',
       coords: [21.3069, -157.8583],
       year: '2020',
-      photos: [],
+      photos: ['/images/story/said-yes.jpg'],
       story: [
         'Tobi had already asked, and after taking a moment to think about it, Adeola said yes to a relationship leading to marriage on the 12th of July, 2025.',
         'Adeola loves surprises, and by this point, Tobi should be used to them, because Adeola delivered the response inside a cake box. Now, we cannot wait to say yes again at the altar.',
@@ -122,7 +123,7 @@ export const wedding = {
       caption: 'Sensational!',
       coords: [35.6762, 139.6503],
       year: '2021',
-      photos: [],
+      photos: ['/images/story/first-kiss.jpg'],
       story: [
         'Now here is a reason why you might want front-row seats at our wedding…',
         'For the first time, you will see us kiss. 😌😉',
@@ -136,6 +137,8 @@ export const wedding = {
       coords: [13.7563, 100.5018],
       year: '2025',
       photos: [],
+      video: '/video/introduction.mp4',
+      poster: '/images/story/introduction-poster.jpg',
       story: [
         'In September, our families officially met in an intimate and beautiful gathering that set the tone for everything to follow. If the traditional introduction was the beta test, it would be an indicator that the wedding will be amazing!',
         'There was plenty of food, plenty of joy and a show of love, confirming that our families fit together seamlessly.',
@@ -149,6 +152,8 @@ export const wedding = {
       coords: [25.2048, 55.2708],
       year: '2026',
       photos: [],
+      video: '/video/best-memories.mp4',
+      poster: '/images/story/best-memories-poster.jpg',
       story: [
         'For the past twenty-something months, we have had crazy fun being each other’s best friends. We have travelled to a couple of states together, explored tourist sites and dined in several places.',
         'We have bonded over food, over fun, over salsa, over arcade games, over silly AI short dramas, over Chelsea, over Africanism, over good music, over pop quiz events and a lot more. We have truly been each other’s muse.',
@@ -200,6 +205,31 @@ export const wedding = {
       bank: 'GTBank',
       accountName: 'Adegbite Tobi Gabriel',
       accountNumber: '0177350044',
+    },
+  ],
+
+  /**
+   * 🎶💸 Extra buttons, shown after Gift in the details section and as icons in the top bar.
+   * Each opens a pop-up whose button goes to `url` (an outside site). Remove an entry to hide it.
+   */
+  linkOuts: [
+    {
+      id: 'song',
+      icon: 'music',
+      label: 'Request a Song',
+      title: 'Request a Song at the wedding',
+      text: 'Want to hear your favourite love songs on the dancefloor? Drop your song requests straight into the DJ queue so we can dance to the beats you love the most.',
+      button: 'Add Your Song',
+      url: '', // link to the DJ playlist
+    },
+    {
+      id: 'spray',
+      icon: 'money',
+      label: 'Spray Money',
+      title: 'Spray Money Virtually',
+      text: 'Can’t spray us with physical cash? No problem! Create a digital wallet on the spot in seconds and spray us with love right from your phone as the party gets moving.',
+      button: 'Start Spraying',
+      url: '', // link to the Nawo app
     },
   ],
 

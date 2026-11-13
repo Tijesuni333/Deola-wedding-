@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Icon } from './Icon'
 import { RsvpOrLive } from './RsvpOrLive'
+import { LinkOutButton } from './LinkOut'
 import { useApp } from '../hooks/useApp'
 import { locales } from '../config/i18n'
 import { wedding } from '../config/wedding'
@@ -92,6 +93,9 @@ export function Toolbar() {
                 <Icon name="gift" />
               </IconButton>
             )}
+            {wedding.linkOuts.map((item) => (
+              <LinkOutButton key={item.id} item={item} variant="icon" />
+            ))}
             <IconButton label={t.theme} onClick={toggleTheme} pressed={theme === 'dark'}>
               <Icon name={theme === 'dark' ? 'sun' : 'moon'} />
             </IconButton>

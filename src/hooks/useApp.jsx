@@ -180,11 +180,12 @@ export function AppProvider({ children }) {
     const audible = (v) => v instanceof HTMLVideoElement && !v.paused && !v.ended && !v.muted && v.volume > 0
     const anyAudible = () => [...document.querySelectorAll('video')].some(audible)
     const onChange = (e) => {
-      if (!(e.target instanceof HTMLVideoElement)) return
+      if (!(e.target instanceof HTMLVideoElement) && e.type !== 'storymedia') return
       if (anyAudible()) suspendMusic()
       else if (document.visibilityState === 'visible' && !document.getElementById('pin-title')) resumeMusic()
     }
-    const events = ['play', 'playing', 'pause', 'ended', 'volumechange', 'emptied']
+    // 'storymedia': a memory's video was removed from the page (switching memories).
+    const events = ['play', 'playing', 'pause', 'ended', 'volumechange', 'emptied', 'storymedia']
     events.forEach((ev) => document.addEventListener(ev, onChange, true))
     return () => events.forEach((ev) => document.removeEventListener(ev, onChange, true))
   }, [suspendMusic, resumeMusic])

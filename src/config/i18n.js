@@ -16,6 +16,7 @@ const en = {
   globeSelect: 'Select a memory to start.',
   readStory: 'Read our story',
   nextMemory: 'Next',
+  prevMemory: 'Previous',
   newAdventure1: 'And now,',
   newAdventure2: 'our new adventure begins.',
   months: 'Months',

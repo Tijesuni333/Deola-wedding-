@@ -2,6 +2,7 @@ import { useId, useState } from 'react'
 import { Icon } from './Icon'
 import { DirectionsButton } from './DirectionsGate'
 import { RsvpOrLive } from './RsvpOrLive'
+import { LinkOutButton } from './LinkOut'
 import { useApp } from '../hooks/useApp'
 import { useCountdown } from '../hooks/useCountdown'
 import { wedding } from '../config/wedding'
@@ -151,6 +152,9 @@ export function WeddingDetails() {
                 <Icon name="gift" width={14} height={14} /> {t.giftCouple}
               </button>
             )}
+            {wedding.linkOuts.map((item) => (
+              <LinkOutButton key={item.id} item={item} />
+            ))}
             <RsvpOrLive />
           </div>
           {wedding.venue.note && (

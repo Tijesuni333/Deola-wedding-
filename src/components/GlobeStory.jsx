@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { Globe } from './Globe'
-import { PhotoFrame } from './PhotoFrame'
+import { StoryMedia } from './StoryMedia'
 import { Icon } from './Icon'
 import { Modal } from './Modal'
 import { useApp } from '../hooks/useApp'
@@ -44,9 +44,28 @@ export function GlobeStory() {
     }
   }, [activeId])
 
+  // Fetch the memory photos (and video posters) quietly once the page has settled, so tapping a memory shows it at once.
+  useEffect(() => {
+    const id = setTimeout(() => {
+      stops.forEach((s) => [s.photos?.[0], s.poster].filter(Boolean).forEach((src) => (new Image().src = src)))
+    }, 4000)
+    return () => clearTimeout(id)
+  }, [])
+
   const go = (dir) => {
     const next = index + dir
     if (next >= 0 && next < stops.length) setActiveId(stops[next].id)
+  }
+
+  // Previous / next inside the story pop-up: switch memory and start the new story from the top.
+  const article = useRef(null)
+  const step = (dir) => {
+    const target = stops[index + dir]
+    if (!target) return
+    go(dir)
+    if (!isLong(target)) setReading(false)
+    const panel = article.current?.closest('.overflow-y-auto')
+    if (panel) panel.scrollTop = 0
   }
 
   const closing = (
@@ -109,13 +128,7 @@ export function GlobeStory() {
 
               {active ? (
                 <div ref={card} key={active.id} role="tabpanel" aria-live="polite" className="scroll-mt-24">
-                  <div className="grid grid-cols-2 gap-3 lg:max-w-[calc(60svh*3/4+0.75rem)]">
-                    {(active.photos.length ? active.photos : ['', '']).slice(0, 2).map((src, i) => (
-                      <div key={i} className={`aspect-[3/4] overflow-hidden rounded-sm ${i === 0 ? '' : 'mt-10 lg:mt-4'}`}>
-                        <PhotoFrame src={src || undefined} label={active.title} index={index + i} />
-                      </div>
-                    ))}
-                  </div>
+                  <StoryMedia stop={active} index={index} />
                   <h3 className="mt-8 font-display text-3xl lg:mt-5">{active.title}</h3>
                   {active.caption && <p className="mt-3 max-w-md leading-relaxed text-ink-soft dark:text-moon-soft">{active.caption}</p>}
                   {isLong(active) && (
@@ -164,7 +177,7 @@ export function GlobeStory() {
 
       <Modal open={reading && isLong(active)} onClose={() => setReading(false)} label={active?.title}>
         {active?.story && (
-          <article className="px-7 pt-12 pb-10 sm:px-10">
+          <article ref={article} className="px-7 pt-12 pb-10 sm:px-10">
             <p className="eyebrow text-accent">
               {String(index + 1).padStart(2, '0')} / {String(stops.length).padStart(2, '0')}
             </p>
@@ -174,17 +187,26 @@ export function GlobeStory() {
                 <p key={i}>{para}</p>
               ))}
             </div>
-            {index < stops.length - 1 && (
-              <button
-                onClick={() => {
-                  go(1)
-                  if (!isLong(stops[index + 1])) setReading(false)
-                }}
-                className="eyebrow mt-8 inline-flex items-center gap-1.5 text-[0.62rem] text-accent underline-offset-4 hover:underline"
-              >
-                {t.nextMemory}: {stops[index + 1].title} <Icon name="chevronRight" width={12} height={12} />
-              </button>
-            )}
+            <nav className="mt-10 flex items-start justify-between gap-6 border-t border-line pt-6 dark:border-line-dark">
+              {index > 0 ? (
+                <button onClick={() => step(-1)} className="group flex max-w-[48%] flex-col items-start gap-1.5 text-left">
+                  <span className="eyebrow inline-flex items-center gap-1 text-[0.6rem] text-accent">
+                    <Icon name="chevronLeft" width={12} height={12} /> {t.prevMemory}
+                  </span>
+                  <span className="font-display text-lg leading-snug underline-offset-4 group-hover:underline">{stops[index - 1].title}</span>
+                </button>
+              ) : (
+                <span />
+              )}
+              {index < stops.length - 1 && (
+                <button onClick={() => step(1)} className="group flex max-w-[48%] flex-col items-end gap-1.5 text-right">
+                  <span className="eyebrow inline-flex items-center gap-1 text-[0.6rem] text-accent">
+                    {t.nextMemory} <Icon name="chevronRight" width={12} height={12} />
+                  </span>
+                  <span className="font-display text-lg leading-snug underline-offset-4 group-hover:underline">{stops[index + 1].title}</span>
+                </button>
+              )}
+            </nav>
           </article>
         )}
       </Modal>
