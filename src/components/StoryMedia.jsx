@@ -4,8 +4,8 @@ import { PhotoFrame } from './PhotoFrame'
 
 /**
  * One full-width photo or video for a memory, under the same brown tint as the hero photo (#573831).
- * Videos play silently on a loop; the round button turns the sound on (the background music pauses for it,
- * see useApp) and lifts the tint so the video can be watched properly.
+ * Videos stay still on their cover until the guest taps the round sound button, which plays them with sound
+ * (the background music pauses for it, see useApp) and lifts the tint; tapping again pauses.
  */
 export function StoryMedia({ stop, index }) {
   const photo = stop.photos?.[0]
@@ -27,27 +27,18 @@ export function StoryMedia({ stop, index }) {
 
 function StoryVideo({ src, poster, label }) {
   const video = useRef(null)
-  const [sound, setSound] = useState(false)
-  // The cover picture shows straight away and fades out once the video is really playing, so the card is never blank
-  // while a phone is still fetching the first frames.
-  const [playing, setPlaying] = useState(false)
-  // Load the cover first, then the video, so on a slow connection the two don't compete and the picture comes up fast.
-  const [coverDone, setCoverDone] = useState(!poster)
+  // The video only plays when the guest asks: the sound button is play/pause, and it always plays with sound.
+  const [on, setOn] = useState(false)
+  // Until it has played, the cover picture sits on top (so the card is never blank or a black frame).
+  const [started, setStarted] = useState(false)
 
   useEffect(() => {
     const el = video.current
-    // Set in JS as well: React doesn't reliably write the `muted` attribute, and phones only autoplay muted video.
-    el.muted = true
-    el.defaultMuted = true
-
-    // Leaving the tab: go quiet (the PIN screen comes back up) and carry on silently on return.
+    // Leaving the tab (the PIN screen comes back up): stop the video.
     const onVisibility = () => {
       if (document.visibilityState === 'hidden') {
-        el.muted = true
-        setSound(false)
         el.pause()
-      } else if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        el.play().catch(() => {})
+        setOn(false)
       }
     }
     document.addEventListener('visibilitychange', onVisibility)
@@ -59,61 +50,57 @@ function StoryVideo({ src, poster, label }) {
     }
   }, [])
 
-  // Start playing (silently) as soon as the video is allowed to load.
-  useEffect(() => {
-    if (coverDone && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) video.current.play().catch(() => {})
-  }, [coverDone])
-
-  const toggleSound = () => {
-    setCoverDone(true) // tapped before the cover finished: start loading the video now (the effect above plays it)
+  const toggle = () => {
     const el = video.current
-    const on = !sound || el.paused
-    el.muted = !on
-    setSound(on)
     if (on) {
+      el.pause()
+      setOn(false)
+    } else {
+      el.muted = false
       if (el.ended) el.currentTime = 0
-      el.play().catch(() => {})
+      setOn(true)
+      setStarted(true)
+      // Called straight from the tap, so phones allow it to play with sound at once.
+      el.play().catch(() => setOn(false))
     }
-    // Tell the music right away, while still inside the tap: phones only reliably let audio start from a tap.
+    // Tell the music right away, while still inside the tap (it pauses for the video and comes back after).
     document.dispatchEvent(new Event('storymedia'))
   }
 
   return (
     <>
-      {/* The video itself stays fully visible: iPhones won't autoplay a video they consider hidden (e.g. opacity 0). */}
       <video
         ref={video}
-        src={coverDone ? src : undefined}
+        src={src}
         poster={poster}
-        muted
-        loop
         playsInline
         preload="auto"
         aria-label={label}
-        onPlaying={() => setPlaying(true)}
+        onEnded={() => {
+          setOn(false)
+          setStarted(false)
+        }}
+        onPause={() => setOn(false)}
         className="absolute inset-0 h-full w-full object-cover"
       />
-      {/* The cover sits on top so the card is never blank while the first frames load, then fades away. */}
       {poster && (
         <img
           src={poster}
           alt=""
-          onLoad={() => setCoverDone(true)}
-          onError={() => setCoverDone(true)}
-          className={`pointer-events-none absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${playing ? 'opacity-0' : 'opacity-100'}`}
+          className={`pointer-events-none absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${started ? 'opacity-0' : 'opacity-100'}`}
         />
       )}
       <div
         aria-hidden
-        className={`pointer-events-none absolute inset-0 bg-[#573831] transition-opacity duration-700 ${sound ? 'opacity-20' : 'opacity-55'}`}
+        className={`pointer-events-none absolute inset-0 bg-[#573831] transition-opacity duration-700 ${on ? 'opacity-20' : 'opacity-55'}`}
       />
       <button
-        onClick={toggleSound}
-        aria-label={sound ? 'Mute video' : 'Play video with sound'}
-        aria-pressed={sound}
+        onClick={toggle}
+        aria-label={on ? 'Pause video' : 'Play video with sound'}
+        aria-pressed={on}
         className="absolute right-3 bottom-3 flex h-10 w-10 items-center justify-center rounded-full bg-paper/85 text-ink shadow-md transition-transform active:scale-95"
       >
-        <Icon name={sound ? 'sound' : 'mute'} width={18} height={18} />
+        <Icon name={on ? 'sound' : 'mute'} width={18} height={18} />
       </button>
     </>
   )
