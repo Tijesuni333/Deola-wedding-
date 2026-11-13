@@ -130,21 +130,6 @@ export const wedding = {
       ],
     },
     {
-      id: 'introduction',
-      city: 'Bangkok',
-      title: 'Family Introduction',
-      caption: 'The day the Adegbites and clan met the Sorunkes and their clan.',
-      coords: [13.7563, 100.5018],
-      year: '2025',
-      photos: [],
-      video: '/video/introduction.mp4',
-      poster: '/images/story/introduction-poster.jpg',
-      story: [
-        'In September, our families officially met in an intimate and beautiful gathering that set the tone for everything to follow. If the traditional introduction was the beta test, it would be an indicator that the wedding will be amazing!',
-        'There was plenty of food, plenty of joy and a show of love, confirming that our families fit together seamlessly.',
-      ],
-    },
-    {
       id: 'best-memories',
       city: 'Dubai',
       title: 'Our Best Memories Together',
@@ -152,8 +137,8 @@ export const wedding = {
       coords: [25.2048, 55.2708],
       year: '2026',
       photos: [],
-      video: '/video/best-memories.mp4',
-      poster: '/images/story/best-memories-poster.jpg',
+      video: '/video/our-memories.mp4',
+      poster: '/images/story/our-memories-poster.jpg',
       story: [
         'For the past twenty-something months, we have had crazy fun being each other’s best friends. We have travelled to a couple of states together, explored tourist sites and dined in several places.',
         'We have bonded over food, over fun, over salsa, over arcade games, over silly AI short dramas, over Chelsea, over Africanism, over good music, over pop quiz events and a lot more. We have truly been each other’s muse.',
@@ -227,9 +212,9 @@ export const wedding = {
       icon: 'money',
       label: 'Spray Money',
       title: 'Spray Money Virtually',
-      text: 'Can’t spray us with physical cash? No problem! Create a digital wallet on the spot in seconds and spray us with love right from your phone as the party gets moving.',
+      text: 'Can’t spray us with physical cash? No problem! To make it much easier on the big day, download the app now and create your digital wallet in seconds. When the party gets moving, you can spray us with love digitally without any stress.',
       button: 'Start Spraying',
-      url: '', // link to the Nawo app
+      url: 'https://nawoapp.com/e/TQY5UL', // Nawo app
     },
   ],
 
