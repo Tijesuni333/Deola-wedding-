@@ -137,7 +137,7 @@ export const wedding = {
       coords: [25.2048, 55.2708],
       year: '2026',
       photos: [],
-      video: '/video/our-memories-540.mp4',
+      video: '/video/our-memories-480.mp4',
       poster: '/images/story/our-memories-cover.jpg',
       story: [
         'For the past twenty-something months, we have had crazy fun being each other’s best friends. We have travelled to a couple of states together, explored tourist sites and dined in several places.',

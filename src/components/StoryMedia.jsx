@@ -4,8 +4,8 @@ import { PhotoFrame } from './PhotoFrame'
 
 /**
  * One full-width photo or video for a memory, under the same brown tint as the hero photo (#573831).
- * Videos stay still on their cover until the guest taps the round sound button, which plays them with sound
- * (the background music pauses for it, see useApp) and lifts the tint; tapping again pauses.
+ * Videos stay still on their cover until the guest taps them (a play icon sits in the middle); they play with
+ * sound (the background music pauses for it, see useApp) and the tint lifts. Tapping again pauses.
  */
 export function StoryMedia({ stop, index }) {
   const photo = stop.photos?.[0]
@@ -27,20 +27,17 @@ export function StoryMedia({ stop, index }) {
 
 function StoryVideo({ src, poster, label }) {
   const video = useRef(null)
-  // The video only plays when the guest asks: the sound button is play/pause, and it always plays with sound.
+  // `on`: the guest asked it to play (always with sound). `moving`: frames are actually advancing right now.
   const [on, setOn] = useState(false)
-  // Until it has played, the cover picture sits on top (so the card is never blank or a black frame).
+  const [moving, setMoving] = useState(false)
+  // Until the first frames really play, the cover stays on top — a frozen frame would look broken.
   const [started, setStarted] = useState(false)
+  const buffering = on && !moving
 
   useEffect(() => {
     const el = video.current
     // Leaving the tab (the PIN screen comes back up): stop the video.
-    const onVisibility = () => {
-      if (document.visibilityState === 'hidden') {
-        el.pause()
-        setOn(false)
-      }
-    }
+    const onVisibility = () => document.visibilityState === 'hidden' && el.pause()
     document.addEventListener('visibilitychange', onVisibility)
     return () => {
       document.removeEventListener('visibilitychange', onVisibility)
@@ -54,12 +51,10 @@ function StoryVideo({ src, poster, label }) {
     const el = video.current
     if (on) {
       el.pause()
-      setOn(false)
     } else {
       el.muted = false
       if (el.ended) el.currentTime = 0
       setOn(true)
-      setStarted(true)
       // Called straight from the tap, so phones allow it to play with sound at once.
       el.play().catch(() => setOn(false))
     }
@@ -68,7 +63,7 @@ function StoryVideo({ src, poster, label }) {
   }
 
   return (
-    <>
+    <div className="group absolute inset-0">
       <video
         ref={video}
         src={src}
@@ -76,11 +71,20 @@ function StoryVideo({ src, poster, label }) {
         playsInline
         preload="auto"
         aria-label={label}
+        onPlaying={() => {
+          setMoving(true)
+          setStarted(true)
+        }}
+        onWaiting={() => setMoving(false)}
+        onPause={() => {
+          setOn(false)
+          setMoving(false)
+        }}
         onEnded={() => {
           setOn(false)
+          setMoving(false)
           setStarted(false)
         }}
-        onPause={() => setOn(false)}
         className="absolute inset-0 h-full w-full object-cover"
       />
       {poster && (
@@ -92,16 +96,34 @@ function StoryVideo({ src, poster, label }) {
       )}
       <div
         aria-hidden
-        className={`pointer-events-none absolute inset-0 bg-[#573831] transition-opacity duration-700 ${on ? 'opacity-20' : 'opacity-55'}`}
+        className={`pointer-events-none absolute inset-0 bg-[#573831] transition-opacity duration-700 ${moving ? 'opacity-20' : 'opacity-55'}`}
       />
+
+      {/* The whole video is the play/pause button. A big icon in the middle shows it's a video: always there while
+          paused, fading in on hover while it plays, and a spinner while it's still loading. */}
       <button
         onClick={toggle}
         aria-label={on ? 'Pause video' : 'Play video with sound'}
         aria-pressed={on}
-        className="absolute right-3 bottom-3 flex h-10 w-10 items-center justify-center rounded-full bg-paper/85 text-ink shadow-md transition-transform active:scale-95"
+        className="absolute inset-0 flex items-center justify-center"
       >
-        <Icon name={on ? 'sound' : 'mute'} width={18} height={18} />
+        <span
+          className={`flex h-16 w-16 items-center justify-center rounded-full bg-paper/85 text-ink shadow-lg transition-all duration-300 ${
+            on && !buffering ? 'scale-90 opacity-0 group-hover:scale-100 group-hover:opacity-100' : 'scale-100 opacity-100'
+          }`}
+        >
+          {buffering ? (
+            <span className="h-7 w-7 animate-spin rounded-full border-2 border-ink/25 border-t-ink" />
+          ) : (
+            <Icon name={on ? 'pause' : 'play'} width={26} height={26} fill="currentColor" strokeWidth={0} className={on ? '' : 'translate-x-0.5'} />
+          )}
+        </span>
       </button>
-    </>
+
+      {/* Small sound badge in the corner, so it's clear the video plays with sound. */}
+      <span aria-hidden className="pointer-events-none absolute right-3 bottom-3 flex h-9 w-9 items-center justify-center rounded-full bg-paper/85 text-ink shadow-md">
+        <Icon name={on ? 'sound' : 'mute'} width={16} height={16} />
+      </span>
+    </div>
   )
 }
