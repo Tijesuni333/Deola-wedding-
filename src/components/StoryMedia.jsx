@@ -28,13 +28,17 @@ export function StoryMedia({ stop, index }) {
 function StoryVideo({ src, poster, label }) {
   const video = useRef(null)
   const [sound, setSound] = useState(false)
+  // The cover picture sits underneath and shows straight away; the video fades in over it only once it's really
+  // playing, so the card is never blank while a phone is still fetching the first frames.
+  const [playing, setPlaying] = useState(false)
+  // Load the cover first, then the video, so on a slow connection the two don't compete and the picture comes up fast.
+  const [coverDone, setCoverDone] = useState(!poster)
 
   useEffect(() => {
     const el = video.current
     // Set in JS as well: React doesn't reliably write the `muted` attribute, and phones only autoplay muted video.
     el.muted = true
     el.defaultMuted = true
-    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) el.play().catch(() => {})
 
     // Leaving the tab: go quiet (the PIN screen comes back up) and carry on silently on return.
     const onVisibility = () => {
@@ -55,7 +59,13 @@ function StoryVideo({ src, poster, label }) {
     }
   }, [])
 
+  // Start playing (silently) as soon as the video is allowed to load.
+  useEffect(() => {
+    if (coverDone && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) video.current.play().catch(() => {})
+  }, [coverDone])
+
   const toggleSound = () => {
+    setCoverDone(true) // tapped before the cover finished: start loading the video now (the effect above plays it)
     const el = video.current
     const on = !sound || el.paused
     el.muted = !on
@@ -70,16 +80,26 @@ function StoryVideo({ src, poster, label }) {
 
   return (
     <>
+      {poster && (
+        <img
+          src={poster}
+          alt=""
+          onLoad={() => setCoverDone(true)}
+          onError={() => setCoverDone(true)}
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+      )}
       <video
         ref={video}
-        src={src}
+        src={coverDone ? src : undefined}
         poster={poster}
         muted
         loop
         playsInline
-        preload="metadata"
+        preload="auto"
         aria-label={label}
-        className="absolute inset-0 h-full w-full object-cover"
+        onPlaying={() => setPlaying(true)}
+        className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${playing ? 'opacity-100' : 'opacity-0'}`}
       />
       <div
         aria-hidden
