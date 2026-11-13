@@ -153,7 +153,9 @@ export function WeddingDetails() {
             )}
             <RsvpOrLive />
           </div>
-          <p className="mx-auto mt-8 max-w-md text-sm leading-relaxed text-ink-soft dark:text-moon-soft">{wedding.venue.note}</p>
+          {wedding.venue.note && (
+            <p className="mx-auto mt-8 max-w-md text-sm leading-relaxed text-ink-soft dark:text-moon-soft">{wedding.venue.note}</p>
+          )}
         </div>
 
         <div data-reveal className="mt-28">

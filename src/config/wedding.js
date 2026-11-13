@@ -26,7 +26,7 @@ export const wedding = {
     /** 🔒 Directions are for selected guests only: the Directions button asks for this PIN first. '' = no PIN. */
     directionsPin: '1234',
     website: '',
-    note: 'Seating is thoughtfully curated to preserve the warmth and intimacy of the day. Full venue details and timings will be shared with invited guests.',
+    note: '', // optional line under the buttons; '' = hidden
   },
 
   /**
