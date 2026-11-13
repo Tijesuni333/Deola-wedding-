@@ -14,8 +14,8 @@ export const wedding = {
     tagline: 'A journey of love',
   },
 
-  /** ISO string with timezone offset so the countdown is correct everywhere. Start time is a placeholder. */
-  date: '2026-12-15T15:00:00+01:00',
+  /** The countdown runs to this moment: midnight at the start of the wedding day, Nigeria time (+01:00). */
+  date: '2026-12-15T00:00:00+01:00',
   dateLabel: 'Tuesday, December 15th, 2026',
 
   venue: {
@@ -235,7 +235,8 @@ export const wedding = {
 
   rsvp: {
     allowPlusOne: false, // attendance is strictly by personal invitation
-    deadlineLabel: 'Kindly respond by November 1st, 2026',
+    // RSVP stays open until the live stream takes over (see liveStream). Optional line under the title; '' = hidden.
+    deadlineLabel: '',
   },
 
   /**

@@ -72,7 +72,7 @@ function RsvpForm({ onClose }) {
     <form onSubmit={submit} noValidate className="px-7 pt-12 pb-8 sm:px-10">
       <p className="eyebrow text-accent">{t.rsvp}</p>
       <h2 className="mt-3 font-display text-3xl sm:text-4xl">{t.rsvpTitle}</h2>
-      <p className="mt-2 text-sm text-ink-soft dark:text-moon-soft">{wedding.rsvp.deadlineLabel}</p>
+      {wedding.rsvp.deadlineLabel && <p className="mt-2 text-sm text-ink-soft dark:text-moon-soft">{wedding.rsvp.deadlineLabel}</p>}
 
       {/* Honeypot for spam bots — hidden from people and screen readers. */}
       {/* Honeypot for bots. Deliberately not named "website"/"url" etc. — browser autofill
