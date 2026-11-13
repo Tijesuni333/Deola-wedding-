@@ -6,30 +6,43 @@ import { wedding } from '../config/wedding'
 
 /**
  * Directions are only for selected guests: the button asks for a second PIN (wedding.venue.directionsPin)
- * before opening the map. Once entered correctly it is remembered for the rest of the visit.
+ * first. Once entered correctly it is remembered for the rest of the visit. Then a pop-up explains how to get
+ * to the venue (wedding.venue.directions), with a button that opens Google Maps.
  */
 export function DirectionsButton() {
   const { t } = useApp()
   const [open, setOpen] = useState(false)
   const [unlocked, setUnlocked] = useState(!wedding.venue.directionsPin)
 
-  const openMap = () => window.open(wedding.venue.mapsUrl, '_blank', 'noopener,noreferrer')
-
   return (
     <>
-      <button className="btn" onClick={() => (unlocked ? openMap() : setOpen(true))}>
+      <button className="btn" onClick={() => setOpen(true)}>
         <Icon name="pin" width={14} height={14} /> {t.directions}
       </button>
-      <Modal open={open} onClose={() => setOpen(false)} label={t.directionsPinTitle}>
-        <DirectionsPin
-          onUnlock={() => {
-            setUnlocked(true)
-            setOpen(false)
-            openMap()
-          }}
-        />
+      <Modal open={open} onClose={() => setOpen(false)} label={unlocked ? t.directionsTitle : t.directionsPinTitle}>
+        {unlocked ? <DirectionsInfo /> : <DirectionsPin onUnlock={() => setUnlocked(true)} />}
       </Modal>
     </>
+  )
+}
+
+function DirectionsInfo() {
+  const { t } = useApp()
+  return (
+    <div className="flex flex-col items-center px-7 pt-14 pb-12 text-center sm:px-10">
+      <span className="flex h-12 w-12 items-center justify-center rounded-full border border-line text-accent dark:border-line-dark">
+        <Icon name="pin" width={18} height={18} />
+      </span>
+      <h3 className="mt-5 font-display text-3xl">{t.directionsTitle}</h3>
+      <div className="mt-4 max-w-sm space-y-3 text-sm leading-relaxed text-ink-soft dark:text-moon-soft">
+        {(wedding.venue.directions ?? []).map((line) => (
+          <p key={line}>{line}</p>
+        ))}
+      </div>
+      <a className="btn mt-8" href={wedding.venue.mapsUrl} target="_blank" rel="noopener noreferrer">
+        <Icon name="pin" width={14} height={14} /> {t.openInMaps}
+      </a>
+    </div>
   )
 }
 

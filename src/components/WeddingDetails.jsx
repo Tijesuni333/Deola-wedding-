@@ -143,7 +143,6 @@ export function WeddingDetails() {
 
           {/* Phones: an even stack of full-width buttons; wider screens: one centred row. */}
           <div className="mx-auto mt-10 flex max-w-xs flex-col gap-3 sm:max-w-none sm:flex-row sm:flex-wrap sm:justify-center">
-            <DirectionsButton />
             <button className="btn" onClick={() => setGalleryOpen(true)}>
               <Icon name="gallery" width={14} height={14} /> {t.sharePhotos}
             </button>
@@ -156,6 +155,7 @@ export function WeddingDetails() {
               <LinkOutButton key={item.id} item={item} />
             ))}
             <RsvpOrLive />
+            <DirectionsButton />
           </div>
           {wedding.venue.note && (
             <p className="mx-auto mt-8 max-w-md text-sm leading-relaxed text-ink-soft dark:text-moon-soft">{wedding.venue.note}</p>

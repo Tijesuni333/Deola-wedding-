@@ -25,6 +25,12 @@ export const wedding = {
     mapsUrl: 'https://www.google.com/maps/search/?api=1&query=SMA+House+of+Formation%2C+Bodija%2C+Ibadan',
     /** 🔒 Directions are for selected guests only: the Directions button asks for this PIN first. '' = no PIN. */
     directionsPin: '7953',
+    /** Shown in the Directions pop-up before the guest opens Google Maps. One paragraph per line. */
+    directions: [
+      'The venue is SMA House of Formation, Bodija, Ibadan.',
+      'Tap the button below to open it in Google Maps, then tap “Directions” in Maps to get a route from where you are.',
+      'Please plan to arrive a little early so you can park and settle in before the ceremony.',
+    ],
     website: '',
     note: '', // optional line under the buttons; '' = hidden
   },
@@ -167,7 +173,7 @@ export const wedding = {
     { q: 'Can I take photos?', a: 'Yes! Please share them in our gallery — tap the photo icon at the top of the page. However, kindly allow us share online first before you do.' },
     {
       q: 'Do you have a gift registry?',
-      a: 'Your presence is the best gift! If you’d like to give something, tap “Gift the Couple” to see our wishlist and account details.',
+      a: 'Your presence is the best gift! If you’d like to give something, tap the gift icon at the top of the page to see our wishlist and account details.',
     },
   ],
 

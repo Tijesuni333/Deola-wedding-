@@ -4,8 +4,8 @@ import { PhotoFrame } from './PhotoFrame'
 
 /**
  * One full-width photo or video for a memory, under the same brown tint as the hero photo (#573831).
- * Videos stay still on their cover until the guest taps them (a play icon sits in the middle); they play with
- * sound (the background music pauses for it, see useApp) and the tint lifts. Tapping again pauses.
+ * Videos stay still on their cover until the guest taps them (a play icon sits in the middle); they always play
+ * muted so the background music carries on, and the tint lifts. Tapping again pauses.
  */
 export function StoryMedia({ stop, index }) {
   const photo = stop.photos?.[0]
@@ -27,7 +27,7 @@ export function StoryMedia({ stop, index }) {
 
 function StoryVideo({ src, poster, label }) {
   const video = useRef(null)
-  // `on`: the guest asked it to play (always with sound). `moving`: frames are actually advancing right now.
+  // `on`: the guest asked it to play (always muted — the background music keeps playing). `moving`: frames are actually advancing right now.
   const [on, setOn] = useState(false)
   const [moving, setMoving] = useState(false)
   // Until the first frames really play, the cover stays on top — a frozen frame would look broken.
@@ -52,14 +52,11 @@ function StoryVideo({ src, poster, label }) {
     if (on) {
       el.pause()
     } else {
-      el.muted = false
+      el.muted = true
       if (el.ended) el.currentTime = 0
       setOn(true)
-      // Called straight from the tap, so phones allow it to play with sound at once.
       el.play().catch(() => setOn(false))
     }
-    // Tell the music right away, while still inside the tap (it pauses for the video and comes back after).
-    document.dispatchEvent(new Event('storymedia'))
   }
 
   return (
@@ -68,6 +65,7 @@ function StoryVideo({ src, poster, label }) {
         ref={video}
         src={src}
         poster={poster}
+        muted
         playsInline
         preload="auto"
         aria-label={label}
@@ -103,7 +101,7 @@ function StoryVideo({ src, poster, label }) {
           paused, fading in on hover while it plays, and a spinner while it's still loading. */}
       <button
         onClick={toggle}
-        aria-label={on ? 'Pause video' : 'Play video with sound'}
+        aria-label={on ? 'Pause video' : 'Play video'}
         aria-pressed={on}
         className="absolute inset-0 flex items-center justify-center"
       >
@@ -119,11 +117,6 @@ function StoryVideo({ src, poster, label }) {
           )}
         </span>
       </button>
-
-      {/* Small sound badge in the corner, so it's clear the video plays with sound. */}
-      <span aria-hidden className="pointer-events-none absolute right-3 bottom-3 flex h-9 w-9 items-center justify-center rounded-full bg-paper/85 text-ink shadow-md">
-        <Icon name={on ? 'sound' : 'mute'} width={16} height={16} />
-      </span>
     </div>
   )
 }
