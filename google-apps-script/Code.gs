@@ -5,7 +5,7 @@
  */
 
 const SHEET_NAME = 'RSVPs'
-const HEADERS = ['S/N', 'Name', 'Email', 'Attending', 'Dietary Restrictions', 'Message']
+const HEADERS = ['Submitted', 'S/N', 'Name', 'Email', 'Attending', 'Dietary Restrictions', 'Message']
 
 function doPost(e) {
   const lock = LockService.getScriptLock()
@@ -27,15 +27,16 @@ function doPost(e) {
 
     // A guest whose connection dropped may press Submit again. The site sends the same id for every try of
     // one form, so a repeat updates the row it already wrote instead of adding a duplicate.
-    // S/N is the guest's number in the list: row 2 is guest 1 (row 1 holds the headings).
+    // Each row: when it was sent, then S/N (the guest's number in the list: row 2 is guest 1, row 1 holds the
+    // headings), then the answers.
     const cache = CacheService.getScriptCache()
     const key = data.id ? 'rsvp:' + String(data.id).slice(0, 64) : ''
     const existing = key ? Number(cache.get(key)) : 0
     if (existing > 1 && existing <= sheet.getLastRow()) {
-      sheet.getRange(existing, 1, 1, HEADERS.length).setValues([[existing - 1].concat(fields)])
+      sheet.getRange(existing, 1, 1, HEADERS.length).setValues([[new Date(), existing - 1].concat(fields)])
     } else {
       const next = sheet.getLastRow() + 1
-      sheet.getRange(next, 1, 1, HEADERS.length).setValues([[next - 1].concat(fields)])
+      sheet.getRange(next, 1, 1, HEADERS.length).setValues([[new Date(), next - 1].concat(fields)])
       if (key) cache.put(key, String(next), 21600) // remembered for 6 hours
     }
     return json({ ok: true })
@@ -48,7 +49,7 @@ function doPost(e) {
 
 /** Lets you open the web app URL in a browser to check it's live. */
 function doGet() {
-  return json({ ok: true, status: 'RSVP endpoint is running', version: 'S/N numbering' })
+  return json({ ok: true, status: 'RSVP endpoint is running', version: 'Submitted + S/N' })
 }
 
 function getSheet() {
