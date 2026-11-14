@@ -31,11 +31,11 @@ export const wedding = {
       routes: [
         {
           from: 'From Iwo Road',
-          text: 'Take a cab or bike to Roundabout. From Roundabout, take a cab towards Aare, Bodija, then take a bike from Aare to SMA House of Formation.',
+          text: 'Take a cab or bike to Roundabout. From Roundabout, take a cab going towards Aare, Bodija. Alight at Aare and take a bike directly to SMA House of Formation.',
         },
         {
           from: 'From Challenge',
-          text: 'Take a cab towards Dugbe and alight at Roundabout. If you get a cab going directly to Roundabout, you can take that instead. From Roundabout, take a cab towards Aare, Bodija, then take a bike from Aare to SMA House of Formation.',
+          text: 'Take a cab or bike to Roundabout. From Roundabout, take a cab towards Aare, Bodija, then take a bike from Aare to SMA House of Formation.',
         },
         {
           from: 'From Moniya Train Station',
