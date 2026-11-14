@@ -53,7 +53,9 @@ function DirectionsInfo() {
         </address>
       )}
 
-      <a className="btn mt-8" href={wedding.venue.mapsUrl} target="_blank" rel="noopener noreferrer">
+      {d.driving && <p className="mt-8 max-w-sm text-sm font-medium leading-relaxed">{d.driving}</p>}
+
+      <a className={`btn ${d.driving ? 'mt-4' : 'mt-8'}`} href={wedding.venue.mapsUrl} target="_blank" rel="noopener noreferrer">
         <Icon name="pin" width={14} height={14} /> {t.openInMaps}
       </a>
     </div>

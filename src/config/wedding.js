@@ -31,7 +31,7 @@ export const wedding = {
       routes: [
         {
           from: 'From Iwo Road',
-          text: 'Take a cab or bike to Roundabout. From Roundabout, take a cab going towards Aare, Bodija. Alight at Aare and take a bike directly to SMA House of Formation.',
+          text: 'Take a cab or bike to Roundabout. From Roundabout, take a cab towards Aare, Bodija, then take a bike from Aare to SMA House of Formation.',
         },
         {
           from: 'From Challenge',
@@ -43,6 +43,7 @@ export const wedding = {
         },
       ],
       address: 'SMA House of Formation, Adeniyi Durosinmi Street, New Bodija, Ibadan.',
+      driving: 'If you are driving, tap the Google Maps button below.',
     },
     website: '',
     note: '', // optional line under the buttons; '' = hidden
@@ -224,7 +225,7 @@ export const wedding = {
       title: 'Request a Song at the wedding',
       text: 'Want to hear your favourite love songs on the dancefloor? Drop your song requests straight into the DJ queue so we can dance to the beats you love the most.',
       button: 'Add Your Song',
-      url: '', // link to the DJ playlist
+      url: 'https://rekwest.app/session/3bb1a965-1507-4ea3-8e6b-d9cb1b6fd89f', // Rekwest DJ queue
     },
     {
       id: 'spray',
