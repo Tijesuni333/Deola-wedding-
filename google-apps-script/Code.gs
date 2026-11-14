@@ -5,7 +5,7 @@
  */
 
 const SHEET_NAME = 'RSVPs'
-const HEADERS = ['Submitted', 'Name', 'Email', 'Attending', 'Dietary Restrictions', 'Message']
+const HEADERS = ['S/N', 'Name', 'Email', 'Attending', 'Dietary Restrictions', 'Message']
 
 function doPost(e) {
   const lock = LockService.getScriptLock()
@@ -23,18 +23,20 @@ function doPost(e) {
     }
 
     const sheet = getSheet()
-    const row = [new Date(), name, email, data.attending ? 'Yes' : 'No', clean(data.dietary, 300), clean(data.message, 1000)]
+    const fields = [name, email, data.attending ? 'Yes' : 'No', clean(data.dietary, 300), clean(data.message, 1000)]
 
     // A guest whose connection dropped may press Submit again. The site sends the same id for every try of
     // one form, so a repeat updates the row it already wrote instead of adding a duplicate.
+    // S/N is the guest's number in the list: row 2 is guest 1 (row 1 holds the headings).
     const cache = CacheService.getScriptCache()
     const key = data.id ? 'rsvp:' + String(data.id).slice(0, 64) : ''
     const existing = key ? Number(cache.get(key)) : 0
     if (existing > 1 && existing <= sheet.getLastRow()) {
-      sheet.getRange(existing, 1, 1, row.length).setValues([row])
+      sheet.getRange(existing, 1, 1, HEADERS.length).setValues([[existing - 1].concat(fields)])
     } else {
-      sheet.appendRow(row)
-      if (key) cache.put(key, String(sheet.getLastRow()), 21600) // remembered for 6 hours
+      const next = sheet.getLastRow() + 1
+      sheet.getRange(next, 1, 1, HEADERS.length).setValues([[next - 1].concat(fields)])
+      if (key) cache.put(key, String(next), 21600) // remembered for 6 hours
     }
     return json({ ok: true })
   } catch (err) {
@@ -51,8 +53,8 @@ function doGet() {
 
 function getSheet() {
   const ss = SpreadsheetApp.getActiveSpreadsheet()
-  let sheet = ss.getSheetByName(SHEET_NAME)
-  if (!sheet) sheet = ss.insertSheet(SHEET_NAME)
+  // The "RSVPs" tab if there is one, otherwise the first tab of the sheet.
+  const sheet = ss.getSheetByName(SHEET_NAME) || ss.getSheets()[0]
   if (sheet.getLastRow() === 0) {
     sheet.appendRow(HEADERS)
     sheet.getRange(1, 1, 1, HEADERS.length).setFontWeight('bold')

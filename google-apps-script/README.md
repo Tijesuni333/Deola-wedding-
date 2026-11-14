@@ -12,7 +12,7 @@
    ```
    VITE_RSVP_ENDPOINT=https://script.google.com/macros/s/XXXX/exec
    ```
-8. Restart `npm run dev`. RSVPs now land in the **RSVPs** tab, and the header row is created automatically.
+8. Restart `npm run dev`. RSVPs land in the **RSVPs** tab (or the first tab if there is none), numbered in the S/N column. The heading row is added automatically if the tab is empty.
 
 **To test the endpoint:** open the `/exec` URL in a browser. It should show `{"ok":true,"status":"RSVP endpoint is running"}`.
 
