@@ -48,7 +48,7 @@ function doPost(e) {
 
 /** Lets you open the web app URL in a browser to check it's live. */
 function doGet() {
-  return json({ ok: true, status: 'RSVP endpoint is running' })
+  return json({ ok: true, status: 'RSVP endpoint is running', version: 'S/N numbering' })
 }
 
 function getSheet() {
