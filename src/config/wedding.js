@@ -178,7 +178,7 @@ export const wedding = {
     { q: 'What should I wear?', a: 'Wear anything comfortable. Please refer to the invite for the colours of the day.' },
     {
       q: 'Can I bring a plus-one?',
-      a: 'Attendance is strictly by personal invitation, and seating is curated to keep the day warm and intimate — so we kindly ask that only the guests named on your invitation attend.',
+      a: 'Attendance is strictly by personal invitation and seating is curated to keep the day warm and intimate — so we kindly ask that you do not come with a plus one unless your invite permits.',
     },
     {
       q: 'Can I share the invitation with others?',
