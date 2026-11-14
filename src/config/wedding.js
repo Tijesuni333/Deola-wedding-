@@ -25,12 +25,25 @@ export const wedding = {
     mapsUrl: 'https://www.google.com/maps/search/?api=1&query=SMA+House+of+Formation%2C+Bodija%2C+Ibadan',
     /** 🔒 Directions are for selected guests only: the Directions button asks for this PIN first. '' = no PIN. */
     directionsPin: '7953',
-    /** Shown in the Directions pop-up before the guest opens Google Maps. One paragraph per line. */
-    directions: [
-      'The venue is SMA House of Formation, Bodija, Ibadan.',
-      'Tap the button below to open it in Google Maps, then tap “Directions” in Maps to get a route from where you are.',
-      'Please plan to arrive a little early so you can park and settle in before the ceremony.',
-    ],
+    /** Shown in the Directions pop-up before the guest opens Google Maps: the venue, one route per starting point, the address. */
+    directions: {
+      venue: 'SMA House of Formation, Bodija, Ibadan',
+      routes: [
+        {
+          from: 'From Iwo Road',
+          text: 'Take a cab or bike to Roundabout. From Roundabout, take a cab going towards Aare, Bodija. Alight at Aare and take a bike directly to SMA House of Formation.',
+        },
+        {
+          from: 'From Challenge',
+          text: 'Take a cab towards Dugbe and alight at Roundabout. If you get a cab going directly to Roundabout, you can take that instead. From Roundabout, take a cab towards Aare, Bodija, then take a bike from Aare to SMA House of Formation.',
+        },
+        {
+          from: 'From Moniya Train Station',
+          text: 'Take a cab towards Ojoo. From Ojoo, take a cab going towards University of Ibadan (UI). From UI, take a cab towards Aare, Bodija, then take a bike from Aare directly to SMA House of Formation.',
+        },
+      ],
+      address: 'SMA House of Formation, Adeniyi Durosinmi Street, New Bodija, Ibadan.',
+    },
     website: '',
     note: '', // optional line under the buttons; '' = hidden
   },

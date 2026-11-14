@@ -30,6 +30,7 @@ const en = {
   directionsPinTitle: 'Directions PIN',
   directionsTitle: 'Getting There',
   openInMaps: 'Open in Google Maps',
+  address: 'Address',
   directionsPinHint: 'Directions are shared with selected guests. Enter the PIN you were given to open the map.',
   sharePhotos: 'Share Photos',
   rsvp: 'RSVP',

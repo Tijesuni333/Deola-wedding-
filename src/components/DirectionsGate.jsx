@@ -28,17 +28,31 @@ export function DirectionsButton() {
 
 function DirectionsInfo() {
   const { t } = useApp()
+  const d = wedding.venue.directions ?? {}
   return (
     <div className="flex flex-col items-center px-7 pt-14 pb-12 text-center sm:px-10">
       <span className="flex h-12 w-12 items-center justify-center rounded-full border border-line text-accent dark:border-line-dark">
         <Icon name="pin" width={18} height={18} />
       </span>
       <h3 className="mt-5 font-display text-3xl">{t.directionsTitle}</h3>
-      <div className="mt-4 max-w-sm space-y-3 text-sm leading-relaxed text-ink-soft dark:text-moon-soft">
-        {(wedding.venue.directions ?? []).map((line) => (
-          <p key={line}>{line}</p>
+      {d.venue && <p className="eyebrow mt-3 text-accent">{d.venue}</p>}
+
+      <div className="mt-8 w-full max-w-sm space-y-6 text-left">
+        {(d.routes ?? []).map((r) => (
+          <section key={r.from}>
+            <h4 className="font-display text-xl">{r.from}</h4>
+            <p className="mt-1.5 text-sm leading-relaxed text-ink-soft dark:text-moon-soft">{r.text}</p>
+          </section>
         ))}
       </div>
+
+      {d.address && (
+        <address className="mt-8 max-w-sm border-t border-line pt-6 text-sm leading-relaxed not-italic text-ink-soft dark:border-line-dark dark:text-moon-soft">
+          <span className="eyebrow mb-1 block text-accent">{t.address}</span>
+          {d.address}
+        </address>
+      )}
+
       <a className="btn mt-8" href={wedding.venue.mapsUrl} target="_blank" rel="noopener noreferrer">
         <Icon name="pin" width={14} height={14} /> {t.openInMaps}
       </a>
