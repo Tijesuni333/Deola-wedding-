@@ -102,9 +102,9 @@ export const wedding = {
       photos: ['/images/story/how-we-met.jpg'],
       story: [
         'The next Sunday, Adeola asked the person organising transportation for church members who the driver was and was told it was a “Bro Tobi.” Adeola went to look for him to apologise again and tried to get the compartment fixed but Tobi told her not to worry about it, and that was all. No more contacts were exchanged.',
-        'Then came May 30, 2024, when Tobi slid into Adeola’s DMs to tell her he had tried reaching one of her clients online to patronise them. He has since confessed that he was already attracted to her and was just looking for a way to talk to her. Not realising he was the same “Bro Tobi” from the crossover service, Adeola kept things friendly purely for church’s sake.',
-        'Fast forward to February 9, 2025, at a grant-writing business seminar where Tobi was the facilitator. That was the day Adeola truly noticed him and admired his brilliance.',
-        'A few days later, on February 12, an Instagram user who had been quietly engaging with her posts for some months replied to her story post directly. It had been random and she didn’t know who he was until he texted again that day. The puzzle pieces finally connected when Adeola realised, “Wait, this is the Tobi Adegbite from church who also happens to be our grant writing mentor. Yay! Perfect opportunity to ask for help directly.”',
+        'Then came 2024, when Tobi slid into Adeola’s DMs to tell her he had tried reaching one of her clients online to patronise them. He has since confessed that he was already attracted to her and was just looking for a way to talk to her. Not realising he was the same “Bro Tobi” from the crossover service, Adeola kept things friendly purely for church’s sake.',
+        'Fast forward to 2025, at a grant-writing business seminar where Tobi was the facilitator. That was the day Adeola truly noticed him and admired his brilliance.',
+        'A few days later, an Instagram user who had been quietly engaging with her posts for some months replied to her story post directly. It had been random and she didn’t know who he was until he texted again that day. The puzzle pieces finally connected when Adeola realised, “Wait, this is the Tobi Adegbite from church who also happens to be our grant writing mentor. Yay! Perfect opportunity to ask for help directly.”',
         'They talked the longest ever up till that day, decided to move the conversation to WhatsApp, and it was only then that Adeola realised the other “Bro Tobi” from church was actually the exact same person. In fact, that was how the journey of friendship truly started.',
       ],
     },
@@ -132,7 +132,7 @@ export const wedding = {
       year: '2020',
       photos: ['/images/story/said-yes.jpg'],
       story: [
-        'Tobi had already asked, and after taking a moment to think about it, Adeola said yes to a relationship leading to marriage on the 12th of July, 2025.',
+        'Tobi had already asked, and after taking a moment to think about it, Adeola said yes to a relationship leading to marriage in 2025.',
         'Adeola loves surprises, and by this point, Tobi should be used to them, because Adeola delivered the response inside a cake box. Now, we cannot wait to say yes again at the altar.',
       ],
     },
