@@ -21,6 +21,11 @@ async function copyText(text) {
 
 const wishlist = [
   {
+    title: 'An 8kVA inverter and 16kWh battery',
+    note: 'In our marriage, we want to reflect God’s light, and we also want literal light to stay on at home when power goes out.',
+    icon: '💡',
+  },
+  {
     title: 'A white sedan car',
     note: 'Adeola loves white cars so you can already guess who wants it.',
     icon: '🚗',
